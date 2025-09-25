@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كوميشن برو - منصة التسويق بالعمولة الاحترافية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js" defer></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>جاري تحميل لوحة التحكم...</h2>
+            <p>يتم إعداد حسابك وتحميل بيانات الأرباح</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-coins"></i>
+                كوميشن برو
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="#dashboard"><i class="fas fa-chart-line"></i> لوحة التحكم</a></li>
+                    <li><a href="#products"><i class="fas fa-box"></i> المنتجات</a></li>
+                    <li><a href="#withdrawal"><i class="fas fa-money-bill"></i> السحب</a></li>
+                </ul>
+            </nav>
+            <div class="user-menu">
+                <div class="user-info">
+                    <div class="user-avatar">أ</div>
+                    <div>
+                        <div style="font-weight: 700;">أحمد رنده</div>
+                        <div style="font-size: 0.85rem; opacity: 0.8;">ahmed.rande97@gmail.com</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard">
+        <!-- Live Earnings -->
+        <section class="live-earnings">
+            <div class="live-header">
+                <h2 class="live-title">
+                    <i class="fas fa-broadcast-tower"></i>
+                    الأرباح المباشرة
+                </h2>
+                <div class="live-indicator">
+                    <span class="live-dot"></span>
+                    مباشر
+                </div>
+            </div>
+            
+            <div class="earnings-display">
+                <div class="earning-card">
+                    <div class="earning-value" id="todayEarnings">$0.00</div>
+                    <div class="earning-label">أرباح اليوم</div>
+                    <div class="earning-change positive">
+                        <i class="fas fa-arrow-up"></i> +12.5%
+                    </div>
+                </div>
+                
+                <div class="earning-card">
+                    <div class="earning-value" id="weekEarnings">$0.00</div>
+                    <div class="earning-label">أرباح الأسبوع</div>
+                    <div class="earning-change positive">
+                        <i class="fas fa-arrow-up"></i> +8.3%
+                    </div>
+                </div>
+                
+                <div class="earning-card">
+                    <div class="earning-value" id="monthEarnings">$0.00</div>
+                    <div class="earning-label">أرباح الشهر</div>
+                    <div class="earning-change positive">
+                        <i class="fas fa-arrow-up"></i> +15.7%
+                    </div>
+                </div>
+                
+                <div class="earning-card">
+                    <div class="earning-value" id="totalEarnings">$0.00</div>
+                    <div class="earning-label">إجمالي الأرباح</div>
+                    <div class="earning-change positive">
+                        <i class="fas fa-arrow-up"></i> +23.4%
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section class="products-section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="fas fa-star"></i>
+                    المنتجات الأكثر ربحًا
+                </h3>
+            </div>
+            
+            <div class="products-grid">
+                <!-- Product 1 -->
+                <div class="product-card">
+                    <div class="product-header">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=500" alt="دورة التسويق" class="product-image">
+                        <div class="commission-badge high">75%</div>
+                    </div>
+                    <div class="product-body">
+                        <h4 class="product-title">دورة التسويق الرقمي المتقدمة</h4>
+                        <div class="product-category">
+                            <i class="fas fa-graduation-cap"></i>
+                            منتجات رقمية
+                        </div>
+                        <p class="product-description">
+                            دورة شاملة تعلمك أسرار التسويق الرقمي من الصفر حتى الاحتراف.
+                        </p>
+                        <div class="product-stats">
+                            <span class="product-price">$199</span>
+                            <span class="product-earnings">ربح $149.25</span>
+                        </div>
+                        <div class="product-actions">
+                            <a href="https://YOUR_ID.clickbank.product" target="_blank" class="btn btn-primary">
+                                <i class="fas fa-shopping-cart"></i>
+                                شراء الآن
+                            </a>
+                            <button class="btn btn-outline" onclick="copyLink('https://YOUR_ID.clickbank.product')">
+                                <i class="fas fa-copy"></i>
+                                نسخ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 2 -->
+                <div class="product-card">
+                    <div class="product-header">
+                        <img src="https://m.media-amazon.com/images/I/71h6KpJ6pBL._AC_SL1500_.jpg" alt="كاميرا Canon" class="product-image">
+                        <div class="commission-badge low">5.5%</div>
+                    </div>
+                    <div class="product-body">
+                        <h4 class="product-title">كاميرا Canon EOS R5</h4>
+                        <div class="product-category">
+                            <i class="fas fa-camera"></i>
+                            إلكترونيات
+                        </div>
+                        <p class="product-description">
+                            كاميرا احترافية 45 ميجابكسل مع تثبيت صورة متقدم.
+                        </p>
+                        <div class="product-stats">
+                            <span class="product-price">$3,899</span>
+                            <span class="product-earnings">ربح $214.45</span>
+                        </div>
+                        <div class="product-actions">
+                            <a href="https://www.amazon.com/dp/B0863FBGRM?tag=YOUR_ID-20" target="_blank" class="btn btn-primary">
+                                <i class="fas fa-shopping-cart"></i>
+                                شراء من Amazon
+                            </a>
+                            <button class="btn btn-outline" onclick="copyLink('https://www.amazon.com/dp/B0863FBGRM?tag=YOUR_ID-20')">
+                                <i class="fas fa-copy"></i>
+                                نسخ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Withdrawal Section -->
+        <section class="withdrawal-section">
+            <div class="withdrawal-header">
+                <h3 class="section-title">
+                    <i class="fas fa-money-bill-wave"></i>
+                    سحب الأرباح
+                </h3>
+                <div class="balance-info">
+                    <span class="balance-value" id="availableBalance">$2,847.50</span>
+                    <span class="balance-currency">USD</span>
+                </div>
+            </div>
+            
+            <form class="withdrawal-form" onsubmit="processWithdrawal(event)">
+                <div class="form-group">
+                    <label for="withdrawalAmount">المبلغ ($)</label>
+                    <input type="number" id="withdrawalAmount" min="10" max="2847.50" step="0.01" value="100" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="withdrawalMethod">طريقة السحب</label>
+                    <select id="withdrawalMethod" required>
+                        <option value="binance">Binance (USDT)</option>
+                        <option value="paypal">PayPal</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="withdrawal-button">
+                    <i class="fas fa-paper-plane"></i>
+                    طلب سحب
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+</body>
+</html>
