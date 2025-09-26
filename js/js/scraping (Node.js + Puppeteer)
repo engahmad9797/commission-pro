@@ -1,0 +1,19 @@
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto('https://www.shein.com/Smart-Watches-c-2009.html');
+
+  const products = await page.evaluate(() => {
+    return Array.from(document.querySelectorAll('.S-product-item')).map(product => ({
+      title: product.querySelector('.S-product-item__name')?.innerText,
+      image: product.querySelector('img')?.src,
+      price: product.querySelector('.S-product-item__price')?.innerText,
+      link: product.querySelector('a')?.href
+    }));
+  });
+
+  console.log(products);
+  await browser.close();
+})();
