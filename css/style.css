@@ -3885,3 +3885,20 @@ body {
         margin-bottom: 2rem;
     }
 }
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(){
+    var ids = ['loader','loadingOverlay','preloader'];
+    var classes = ['loader','loading','preloader','loading-overlay'];
+    ids.forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.style.display = 'none';
+    });
+    classes.forEach(function(c){
+      var els = document.getElementsByClassName(c);
+      for(var i=0;i<els.length;i++) els[i].style.display='none';
+    });
+    // للتأكد إنو أي كلاس يجعل الجسم مقفل يفتح
+    document.body.style.overflow = 'auto';
+  });
+</script>
