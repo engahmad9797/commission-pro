@@ -1,0 +1,10 @@
+fetch("https://ali-express1.p.rapidapi.com/search?keyword=smartwatch", {
+  method: "GET",
+  headers: {
+    "X-RapidAPI-Key": "YOUR_API_KEY",
+    "X-RapidAPI-Host": "ali-express1.p.rapidapi.com"
+  }
+})
+.then(res => res.json())
+.then(data => console.log(data))
+.catch(err => console.error(err));
