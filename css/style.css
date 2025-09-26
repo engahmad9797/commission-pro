@@ -3902,3 +3902,6 @@ body {
     document.body.style.overflow = 'auto';
   });
 </script>
+#loading-screen {
+  display: none !important;
+}
