@@ -1,0 +1,36 @@
+const axios = require('axios');
+
+// توكن OAuth الخاص بك من eBay Partner Network
+const EBAY_OAUTH_TOKEN = 'YOUR_OAUTH_TOKEN_HERE';
+
+// دالة لجلب المنتجات بناءً على كلمة بحث
+async function fetchEbayProducts(searchQuery) {
+  try {
+    const response = await axios.get('https://api.ebay.com/buy/browse/v1/item_summary/search', {
+      params: {
+        q: searchQuery,
+        limit: 10, // عدد المنتجات المطلوبة
+      },
+      headers: {
+        'Authorization': `Bearer ${EBAY_OAUTH_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const items = response.data.itemSummaries;
+    // عرض عناوين المنتجات وسعرها
+    items.forEach(item => {
+      console.log(`Title: ${item.title}`);
+      console.log(`Price: ${item.price.value} ${item.price.currency}`);
+      console.log(`URL: ${item.itemWebUrl}`);
+      console.log('--------------------------');
+    });
+
+    return items;
+  } catch (error) {
+    console.error('Error fetching eBay products:', error.response ? error.response.data : error.message);
+  }
+}
+
+// استدعاء الدالة
+fetchEbayProducts('smartwatch');
