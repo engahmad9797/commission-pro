@@ -1,0 +1,21 @@
+{
+  "name": "كوميشن برو",
+  "short_name": "كوميشن برو",
+  "description": "منصة التسويق بالعمولة الاحترافية",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FF6B35",
+  "theme_color": "#FF6B35",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
