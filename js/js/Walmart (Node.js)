@@ -1,0 +1,30 @@
+const axios = require('axios');
+
+const API_KEY = 'YOUR_RAPIDAPI_KEY';
+
+async function fetchWalmartProducts(searchTerm) {
+  try {
+    const response = await axios.get('https://walmart-search.p.rapidapi.com/search', {
+      params: { query: searchTerm, numItems: '10' },
+      headers: {
+        'X-RapidAPI-Key': API_KEY,
+        'X-RapidAPI-Host': 'walmart-search.p.rapidapi.com',
+      },
+    });
+
+    const items = response.data.items;
+    items.forEach(item => {
+      console.log(`Title: ${item.name}`);
+      console.log(`Price: ${item.salePrice}`);
+      console.log(`URL: ${item.productUrl}`);
+      console.log('------------------------');
+    });
+
+    return items;
+  } catch (error) {
+    console.error('Error fetching Walmart products:', error.message);
+  }
+}
+
+// مثال استدعاء الدالة
+fetchWalmartProducts('laptop');
