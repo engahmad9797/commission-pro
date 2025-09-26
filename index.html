@@ -17,6 +17,9 @@
             <div class="loading-spinner"></div>
             <h2>جاري تحميل لوحة التحكم...</h2>
             <p>يتم إعداد حسابك وتحميل بيانات الأرباح</p>
+            <div class="loading-progress">
+                <div class="progress-bar"></div>
+            </div>
         </div>
     </div>
 
@@ -31,8 +34,9 @@
                 <ul class="nav-menu">
                     <li><a href="#dashboard"><i class="fas fa-chart-line"></i> لوحة التحكم</a></li>
                     <li><a href="#products"><i class="fas fa-box"></i> المنتجات</a></li>
-                    <li><a href="#withdrawal"><i class="fas fa-money-bill"></i> السحب</a></li>
+                    <li><a href="#referrals"><i class="fas fa-user-friends"></i> الإحالات</a></li>
                     <li><a href="#analytics"><i class="fas fa-chart-bar"></i> التحليلات</a></li>
+                    <li><a href="#withdrawal"><i class="fas fa-money-bill"></i> السحب</a></li>
                 </ul>
             </nav>
             <div class="user-menu">
@@ -43,12 +47,48 @@
                         <div style="font-size: 0.85rem; opacity: 0.8;">ahmed.rande97@gmail.com</div>
                     </div>
                 </div>
+                <div class="dropdown">
+                    <button class="dropdown-toggle">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="#profile"><i class="fas fa-user"></i> الملف الشخصي</a>
+                        <a href="#settings"><i class="fas fa-cog"></i> الإعدادات</a>
+                        <a href="#help"><i class="fas fa-question-circle"></i> المساعدة</a>
+                        <a href="#logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
 
     <!-- Main Dashboard -->
     <main class="dashboard">
+        <!-- Welcome Banner -->
+        <section class="welcome-banner">
+            <div class="banner-content">
+                <h1>مرحباً بك في كوميشن برو</h1>
+                <p>ابدأ رحلتك في التسويق بالعمولة مع أكبر المتاجر الإلكترونية</p>
+                <div class="banner-stats">
+                    <div class="stat-item">
+                        <span class="stat-value">$2,847.50</span>
+                        <span class="stat-label">إجمالي الأرباح</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">89</span>
+                        <span class="stat-label">مبيعات</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">342</span>
+                        <span class="stat-label">إحالات</span>
+                    </div>
+                </div>
+            </div>
+            <div class="banner-image">
+                <i class="fas fa-chart-line"></i>
+            </div>
+        </section>
+
         <!-- Platform Selector -->
         <section class="platform-selector">
             <div class="platform-header">
@@ -70,6 +110,10 @@
                         <span class="rate">4% - 10%</span>
                         <span>عمولة</span>
                     </div>
+                    <div class="platform-stats">
+                        <span><i class="fas fa-box"></i> 2.5M منتج</span>
+                        <span><i class="fas fa-shipping-fast"></i> شحن سريع</span>
+                    </div>
                 </div>
                 
                 <div class="platform-card" data-platform="aliexpress">
@@ -81,6 +125,10 @@
                     <div class="commission-rate">
                         <span class="rate">5% - 50%</span>
                         <span>عمولة</span>
+                    </div>
+                    <div class="platform-stats">
+                        <span><i class="fas fa-box"></i> 100M+ منتج</span>
+                        <span><i class="fas fa-globe"></i> شحن عالمي</span>
                     </div>
                 </div>
                 
@@ -94,6 +142,26 @@
                         <span class="rate">5% - 20%</span>
                         <span>عمولة</span>
                     </div>
+                    <div class="platform-stats">
+                        <span><i class="fas fa-box"></i> 50M+ منتج</span>
+                        <span><i class="fas fa-percentage"></i> خصومات حتي 90%</span>
+                    </div>
+                </div>
+                
+                <div class="platform-card" data-platform="ebay">
+                    <div class="platform-icon ebay">
+                        <i class="fab fa-ebay"></i>
+                    </div>
+                    <h3>إيباي</h3>
+                    <p>المزادات والمنتجات المستعملة</p>
+                    <div class="commission-rate">
+                        <span class="rate">3% - 12%</span>
+                        <span>عمولة</span>
+                    </div>
+                    <div class="platform-stats">
+                        <span><i class="fas fa-box"></i> 1.5B منتج</span>
+                        <span><i class="fas fa-gavel"></i> مزادات حية</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -105,9 +173,14 @@
                     <i class="fas fa-broadcast-tower"></i>
                     الأرباح المباشرة
                 </h2>
-                <div class="live-indicator">
-                    <span class="live-dot"></span>
-                    مباشر
+                <div class="live-controls">
+                    <div class="live-indicator">
+                        <span class="live-dot"></span>
+                        مباشر
+                    </div>
+                    <button class="btn-refresh" onclick="refreshEarnings()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
                 </div>
             </div>
             
@@ -118,6 +191,9 @@
                     <div class="earning-change positive">
                         <i class="fas fa-arrow-up"></i> +12.5%
                     </div>
+                    <div class="earning-chart">
+                        <canvas id="todayChart"></canvas>
+                    </div>
                 </div>
                 
                 <div class="earning-card">
@@ -125,6 +201,9 @@
                     <div class="earning-label">أرباح الأسبوع</div>
                     <div class="earning-change positive">
                         <i class="fas fa-arrow-up"></i> +8.3%
+                    </div>
+                    <div class="earning-chart">
+                        <canvas id="weekChart"></canvas>
                     </div>
                 </div>
                 
@@ -134,6 +213,9 @@
                     <div class="earning-change positive">
                         <i class="fas fa-arrow-up"></i> +15.7%
                     </div>
+                    <div class="earning-chart">
+                        <canvas id="monthChart"></canvas>
+                    </div>
                 </div>
                 
                 <div class="earning-card">
@@ -141,6 +223,135 @@
                     <div class="earning-label">إجمالي الأرباح</div>
                     <div class="earning-change positive">
                         <i class="fas fa-arrow-up"></i> +23.4%
+                    </div>
+                    <div class="earning-chart">
+                        <canvas id="totalChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+            <div class="action-card" onclick="showShareModal()">
+                <i class="fas fa-share-alt"></i>
+                <h3>مشاركة الروابط</h3>
+                <p>شارك روابط التسويق بسهولة</p>
+            </div>
+            <div class="action-card" onclick="showReferralModal()">
+                <i class="fas fa-user-plus"></i>
+                <h3>دعوة أصدقاء</h3>
+                <p>احصل على عمولة من إحالاتك</p>
+            </div>
+            <div class="action-card" onclick="showWithdrawalModal()">
+                <i class="fas fa-money-check-alt"></i>
+                <h3>سحب سريع</h3>
+                <p>اسحب أرباحك فوراً</p>
+            </div>
+            <div class="action-card" onclick="showHelpModal()">
+                <i class="fas fa-question-circle"></i>
+                <h3>المساعدة</h3>
+                <p>احصل على الدعم الفني</p>
+            </div>
+        </section>
+
+        <!-- Referrals Section -->
+        <section class="referrals-section" id="referrals">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="fas fa-user-friends"></i>
+                    نظام الإحالات
+                </h3>
+                <div class="referral-stats">
+                    <div class="stat-item">
+                        <span class="stat-value" id="totalReferrals">342</span>
+                        <span class="stat-label">إجمالي الإحالات</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="activeReferrals">128</span>
+                        <span class="stat-label">إحالات نشطة</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="referralEarnings">$1,247.50</span>
+                        <span class="stat-label">أرباح الإحالات</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="referral-content">
+                <div class="referral-link-box">
+                    <h4>رابط الإحالة الخاص بك</h4>
+                    <div class="link-container">
+                        <input type="text" id="referralLink" value="https://commissionpro.com/ref/ahmedrande97" readonly>
+                        <button class="btn btn-primary" onclick="copyReferralLink()">
+                            <i class="fas fa-copy"></i>
+                            نسخ
+                        </button>
+                    </div>
+                    <div class="referral-commission">
+                        <i class="fas fa-percentage"></i>
+                        <span>احصل على 10% من أرباح من تحيلهم مدى الحياة</span>
+                    </div>
+                </div>
+                
+                <div class="referral-methods">
+                    <h4>طرق مشاركة الرابط</h4>
+                    <div class="methods-grid">
+                        <div class="method-card" onclick="shareOnSocial('facebook')">
+                            <i class="fab fa-facebook"></i>
+                            <span>فيسبوك</span>
+                        </div>
+                        <div class="method-card" onclick="shareOnSocial('twitter')">
+                            <i class="fab fa-twitter"></i>
+                            <span>تويتر</span>
+                        </div>
+                        <div class="method-card" onclick="shareOnSocial('whatsapp')">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>واتساب</span>
+                        </div>
+                        <div class="method-card" onclick="shareOnSocial('telegram')">
+                            <i class="fab fa-telegram"></i>
+                            <span>تيليجرام</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="referral-leaderboard">
+                <h4>قائمة المتصدرين</h4>
+                <div class="leaderboard-list">
+                    <div class="leaderboard-item">
+                        <div class="rank">1</div>
+                        <div class="user-info">
+                            <div class="user-avatar">م</div>
+                            <div>
+                                <div class="user-name">محمد أحمد</div>
+                                <div class="user-stats">1,247 إحالة</div>
+                            </div>
+                        </div>
+                        <div class="earnings">$12,450</div>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="rank">2</div>
+                        <div class="user-info">
+                            <div class="user-avatar">س</div>
+                            <div>
+                                <div class="user-name">سارة خالد</div>
+                                <div class="user-stats">982 إحالة</div>
+                            </div>
+                        </div>
+                        <div class="earnings">$9,820</div>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="rank">3</div>
+                        <div class="user-info">
+                            <div class="user-avatar">أ</div>
+                            <div>
+                                <div class="user-name">أحمد رنده</div>
+                                <div class="user-stats">342 إحالة</div>
+                            </div>
+                        </div>
+                        <div class="earnings">$2,847</div>
                     </div>
                 </div>
             </div>
@@ -161,48 +372,93 @@
                 </div>
             </div>
             
-            <div class="chart-container">
-                <canvas id="earningsChart"></canvas>
+            <div class="analytics-grid">
+                <div class="chart-container large">
+                    <canvas id="earningsChart"></canvas>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-mouse-pointer"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="totalClicks">1,247</div>
+                            <div class="stat-label">إجمالي النقرات</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> 12.5%
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="totalSales">89</div>
+                            <div class="stat-label">إجمالي المبيعات</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> 8.3%
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="conversionRate">7.1%</div>
+                            <div class="stat-label">معدل التحويل</div>
+                            <div class="stat-change negative">
+                                <i class="fas fa-arrow-down"></i> 2.1%
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="activeReferrals">342</div>
+                            <div class="stat-label">إحالات نشطة</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> 15.7%
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-mouse-pointer"></i>
+            <div class="platform-analytics">
+                <h4>تحليلات المنصات</h4>
+                <div class="platform-charts">
+                    <div class="platform-chart">
+                        <canvas id="platformChart"></canvas>
                     </div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="totalClicks">1,247</div>
-                        <div class="stat-label">إجمالي النقرات</div>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-shopping-cart"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="totalSales">89</div>
-                        <div class="stat-label">إجمالي المبيعات</div>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-percentage"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="conversionRate">7.1%</div>
-                        <div class="stat-label">معدل التحويل</div>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="activeReferrals">342</div>
-                        <div class="stat-label">إحالات نشطة</div>
+                    <div class="platform-legend">
+                        <div class="legend-item">
+                            <span class="legend-color amazon"></span>
+                            <span class="legend-label">أمازون</span>
+                            <span class="legend-value">$1,247</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color aliexpress"></span>
+                            <span class="legend-label">علي إكسبريس</span>
+                            <span class="legend-value">$856</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color temu"></span>
+                            <span class="legend-label">تيمو</span>
+                            <span class="legend-value">$445</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color ebay"></span>
+                            <span class="legend-label">إيباي</span>
+                            <span class="legend-value">$299</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -221,6 +477,7 @@
                         <option value="amazon">أمازون</option>
                         <option value="aliexpress">علي إكسبريس</option>
                         <option value="temu">تيمو</option>
+                        <option value="ebay">إيباي</option>
                     </select>
                     <select class="filter-select" id="categoryFilter">
                         <option value="all">جميع الفئات</option>
@@ -228,6 +485,13 @@
                         <option value="fashion">أزياء</option>
                         <option value="home">منزل</option>
                         <option value="beauty">جمال</option>
+                        <option value="sports">رياضة</option>
+                    </select>
+                    <select class="filter-select" id="sortFilter">
+                        <option value="commission">الأعلى عمولة</option>
+                        <option value="price">الأعلى سعراً</option>
+                        <option value="popular">الأكثر شعبية</option>
+                        <option value="new">الأحدث</option>
                     </select>
                 </div>
             </div>
@@ -244,13 +508,19 @@
             </div>
         </section>
 
-        <!-- Transactions Table -->
+        <!-- Transactions Section -->
         <section class="transactions-section">
             <div class="section-header">
                 <h3 class="section-title">
                     <i class="fas fa-history"></i>
                     سجل المعاملات
                 </h3>
+                <div class="transaction-controls">
+                    <button class="btn-filter active" data-filter="all">الكل</button>
+                    <button class="btn-filter" data-filter="sales">مبيعات</button>
+                    <button class="btn-filter" data-filter="referrals">إحالات</button>
+                    <button class="btn-filter" data-filter="withdrawals">سحوبات</button>
+                </div>
             </div>
             
             <div class="table-container">
@@ -262,6 +532,7 @@
                             <th>المنصة</th>
                             <th>المبلغ</th>
                             <th>الحالة</th>
+                            <th>الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -284,29 +555,282 @@
                 </div>
             </div>
             
-            <form class="withdrawal-form" onsubmit="processWithdrawal(event)">
-                <div class="form-group">
-                    <label for="withdrawalAmount">المبلغ ($)</label>
-                    <input type="number" id="withdrawalAmount" min="10" max="2847.50" step="0.01" value="100" required>
+            <div class="withdrawal-content">
+                <div class="withdrawal-form-container">
+                    <form class="withdrawal-form" onsubmit="processWithdrawal(event)">
+                        <div class="form-group">
+                            <label for="withdrawalAmount">المبلغ ($)</label>
+                            <input type="number" id="withdrawalAmount" min="10" max="2847.50" step="0.01" value="100" required>
+                            <div class="balance-hint">الحد الأدنى للسحب: $10</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="withdrawalMethod">طريقة السحب</label>
+                            <select id="withdrawalMethod" required>
+                                <option value="binance">Binance (USDT)</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="wise">Wise</option>
+                                <option value="bank">تحويل بنكي</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="bankDetails" style="display: none;">
+                            <label for="bankAccount">رقم الحساب البنكي</label>
+                            <input type="text" id="bankAccount" placeholder="أدخل رقم الحساب البنكي">
+                        </div>
+                        
+                        <button type="submit" class="withdrawal-button">
+                            <i class="fas fa-paper-plane"></i>
+                            طلب سحب
+                        </button>
+                    </form>
                 </div>
                 
-                <div class="form-group">
-                    <label for="withdrawalMethod">طريقة السحب</label>
-                    <select id="withdrawalMethod" required>
-                        <option value="binance">Binance (USDT)</option>
-                        <option value="paypal">PayPal</option>
-                        <option value="wise">Wise</option>
-                        <option value="bank">تحويل بنكي</option>
-                    </select>
+                <div class="withdrawal-history">
+                    <h4>تاريخ السحوبات</h4>
+                    <div class="withdrawal-list">
+                        <div class="withdrawal-item">
+                            <div class="withdrawal-info">
+                                <div class="withdrawal-amount">$500.00</div>
+                                <div class="withdrawal-method">PayPal</div>
+                                <div class="withdrawal-date">15 أكتوبر 2023</div>
+                            </div>
+                            <div class="withdrawal-status completed">
+                                <i class="fas fa-check-circle"></i>
+                                مكتمل
+                            </div>
+                        </div>
+                        <div class="withdrawal-item">
+                            <div class="withdrawal-info">
+                                <div class="withdrawal-amount">$300.00</div>
+                                <div class="withdrawal-method">Binance</div>
+                                <div class="withdrawal-date">10 أكتوبر 2023</div>
+                            </div>
+                            <div class="withdrawal-status completed">
+                                <i class="fas fa-check-circle"></i>
+                                مكتمل
+                            </div>
+                        </div>
+                        <div class="withdrawal-item">
+                            <div class="withdrawal-info">
+                                <div class="withdrawal-amount">$200.00</div>
+                                <div class="withdrawal-method">Wise</div>
+                                <div class="withdrawal-date">5 أكتوبر 2023</div>
+                            </div>
+                            <div class="withdrawal-status pending">
+                                <i class="fas fa-clock"></i>
+                                قيد المعالجة
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
-                <button type="submit" class="withdrawal-button">
-                    <i class="fas fa-paper-plane"></i>
-                    طلب سحب
-                </button>
-            </form>
+            </div>
         </section>
     </main>
+
+    <!-- Modals -->
+    <div class="modal" id="shareModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>مشاركة الروابط</h3>
+                <button class="modal-close" onclick="closeModal('shareModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="share-options">
+                    <div class="share-option" onclick="generateProductLink()">
+                        <i class="fas fa-link"></i>
+                        <h4>رابط منتج</h4>
+                        <p>أنشئ رابط تسويق لمنتج معين</p>
+                    </div>
+                    <div class="share-option" onclick="generateStoreLink()">
+                        <i class="fas fa-store"></i>
+                        <h4>رابط متجر</h4>
+                        <p>أنشئ رابط لمتجر كامل</p>
+                    </div>
+                    <div class="share-option" onclick="generateCategoryLink()">
+                        <i class="fas fa-tags"></i>
+                        <h4>رابط فئة</h4>
+                        <p>أنشئ رابط لفئة منتجات</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="referralModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>دعوة أصدقاء</h3>
+                <button class="modal-close" onclick="closeModal('referralModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="referral-invite">
+                    <h4>رابط الدعوة الخاص بك</h4>
+                    <div class="link-container">
+                        <input type="text" id="inviteLink" value="https://commissionpro.com/invite/ahmedrande97" readonly>
+                        <button class="btn btn-primary" onclick="copyInviteLink()">
+                            <i class="fas fa-copy"></i>
+                            نسخ
+                        </button>
+                    </div>
+                    <div class="referral-benefits">
+                        <h5>مميزات الدعوة:</h5>
+                        <ul>
+                            <li>احصل على 10% من أرباح من تدعوهم مدى الحياة</li>
+                            <li>مكافآت خاصة عند وصول إحالاتك لأهداف معينة</li>
+                            <li>وصول لمحتوى حصري وأدوات تسويق متقدمة</li>
+                        </ul>
+                    </div>
+                    <div class="invite-methods">
+                        <h5>طرق الدعوة:</h5>
+                        <div class="invite-buttons">
+                            <button class="btn-social facebook" onclick="shareOnSocial('facebook')">
+                                <i class="fab fa-facebook"></i>
+                                فيسبوك
+                            </button>
+                            <button class="btn-social twitter" onclick="shareOnSocial('twitter')">
+                                <i class="fab fa-twitter"></i>
+                                تويتر
+                            </button>
+                            <button class="btn-social whatsapp" onclick="shareOnSocial('whatsapp')">
+                                <i class="fab fa-whatsapp"></i>
+                                واتساب
+                            </button>
+                            <button class="btn-social email" onclick="shareViaEmail()">
+                                <i class="fas fa-envelope"></i>
+                                بريد إلكتروني
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="withdrawalModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>سحب سريع</h3>
+                <button class="modal-close" onclick="closeModal('withdrawalModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="quick-withdrawal">
+                    <div class="withdrawal-amounts">
+                        <h4>اختر المبلغ</h4>
+                        <div class="amount-buttons">
+                            <button class="amount-btn" onclick="setWithdrawalAmount(50)">$50</button>
+                            <button class="amount-btn" onclick="setWithdrawalAmount(100)">$100</button>
+                            <button class="amount-btn" onclick="setWithdrawalAmount(250)">$250</button>
+                            <button class="amount-btn" onclick="setWithdrawalAmount(500)">$500</button>
+                        </div>
+                    </div>
+                    <div class="withdrawal-methods">
+                        <h4>اختر الطريقة</h4>
+                        <div class="method-options">
+                            <label class="method-option">
+                                <input type="radio" name="quickMethod" value="binance" checked>
+                                <div class="method-card">
+                                    <i class="fab fa-bitcoin"></i>
+                                    <span>Binance</span>
+                                </div>
+                            </label>
+                            <label class="method-option">
+                                <input type="radio" name="quickMethod" value="paypal">
+                                <div class="method-card">
+                                    <i class="fab fa-paypal"></i>
+                                    <span>PayPal</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-large" onclick="processQuickWithdrawal()">
+                        <i class="fas fa-paper-plane"></i>
+                        سحب الآن
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="helpModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>المساعدة والدعم</h3>
+                <button class="modal-close" onclick="closeModal('helpModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="help-content">
+                    <div class="help-section">
+                        <h4>الأسئلة الشائعة</h4>
+                        <div class="faq-list">
+                            <div class="faq-item">
+                                <div class="faq-question" onclick="toggleFAQ(this)">
+                                    كيف أبدأ في التسويق بالعمولة؟
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    يمكنك البدء بتسجيل حساب في منصتنا، ثم اختيار المنتجات التي تريد التسويق لها ونسخ روابطها التابعة ومشاركتها مع جمهورك.
+                                </div>
+                            </div>
+                            <div class="faq-item">
+                                <div class="faq-question" onclick="toggleFAQ(this)">
+                                    متى يتم تحديث الأرباح؟
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    يتم تحديث الأرباح فوراً عند إتمام عملية الشراء، وتظهر في لوحة التحكم خلال دقائق قليلة.
+                                </div>
+                            </div>
+                            <div class="faq-item">
+                                <div class="faq-question" onclick="toggleFAQ(this)">
+                                    ما هي طرق السحب المتاحة؟
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    نحن ندعم السحب عبر Binance (USDT)، PayPal، Wise، والتحويل البنكي المباشر.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h4>تواصل معنا</h4>
+                        <div class="contact-options">
+                            <div class="contact-option">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <h5>البريد الإلكتروني</h5>
+                                    <p>support@commissionpro.com</p>
+                                </div>
+                            </div>
+                            <div class="contact-option">
+                                <i class="fas fa-comments"></i>
+                                <div>
+                                    <h5>الدردشة المباشرة</h5>
+                                    <p>متاحة من 9 صباحاً حتى 5 مساءً</p>
+                                </div>
+                            </div>
+                            <div class="contact-option">
+                                <i class="fas fa-phone"></i>
+                                <div>
+                                    <h5>الهاتف</h5>
+                                    <p>+966 50 123 4567</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Notification Container -->
     <div class="notification-container" id="notificationContainer"></div>
