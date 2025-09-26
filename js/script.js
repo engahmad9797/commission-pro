@@ -7,6 +7,18 @@ let currentEarnings = {
     total: 2847.50
 };
 
+let products = [];
+let transactions = [];
+let currentPlatform = 'all';
+let currentCategory = 'all';
+
+// API URLs for different platforms (placeholder URLs)
+const API_ENDPOINTS = {
+    amazon: 'https://api.example.com/amazon/products',
+    aliexpress: 'https://api.example.com/aliexpress/products',
+    temu: 'https://api.example.com/temu/products'
+};
+
 // ===== Initialisation au chargement du DOM =====
 document.addEventListener('DOMContentLoaded', function() {
     // Masquer l'écran de chargement
@@ -22,10 +34,14 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeEarningsDisplay();
     initializeChart();
     startLiveUpdates();
+    loadProducts();
     loadTransactions();
     
     // Ajouter les écouteurs d'événements
     setupEventListeners();
+    
+    // Simuler les gains initiaux
+    simulateInitialEarnings();
 });
 
 // ===== Initialiser l'affichage des gains =====
@@ -34,10 +50,18 @@ function initializeEarningsDisplay() {
     animateValue('weekEarnings', 0, currentEarnings.week, 2000);
     animateValue('monthEarnings', 0, currentEarnings.month, 2000);
     animateValue('totalEarnings', 0, currentEarnings.total, 2000);
+    
+    // Animer les statistiques
+    animateValue('totalClicks', 0, 1247, 2000);
+    animateValue('totalSales', 0, 89, 2000);
+    animateValue('activeReferrals', 0, 342, 2000);
+    
+    // Animer le taux de conversion
+    animateValue('conversionRate', 0, 7.1, 2000, true);
 }
 
 // ===== Animer les nombres =====
-function animateValue(id, start, end, duration) {
+function animateValue(id, start, end, duration, isPercentage = false) {
     const obj = document.getElementById(id);
     const range = end - start;
     const minTimer = 50;
@@ -50,9 +74,15 @@ function animateValue(id, start, end, duration) {
     function run() {
         const now = new Date().getTime();
         const remaining = Math.max((endTime - now) / duration, 0);
-        const value = Math.round(end - (remaining * range));
-        obj.innerHTML = '$' + value.toFixed(2);
-        if (value == end) {
+        const value = end - (remaining * range);
+        
+        if (isPercentage) {
+            obj.innerHTML = value.toFixed(1) + '%';
+        } else {
+            obj.innerHTML = Math.floor(value).toLocaleString();
+        }
+        
+        if (value <= end) {
             clearInterval(timer);
         }
     }
@@ -119,15 +149,186 @@ function initializeChart() {
     });
 }
 
-// ===== Démarrer les mises à jour en direct =====
-function startLiveUpdates() {
-    // Mettre à jour les gains toutes les 5 secondes
-    setInterval(() => {
-        const newEarning = Math.random() * 10 + 5;
-        currentEarnings.today += newEarning;
-        currentEarnings.week += newEarning;
-        currentEarnings.month += newEarning;
-        currentEarnings.total += newEarning;
+// ===== Charger les produits =====
+function loadProducts() {
+    // Simuler le chargement des produits depuis différentes plateformes
+    const mockProducts = [
+        {
+            id: 1,
+            title: 'دورة التسويق الرقمي المتقدمة',
+            category: 'digital',
+            platform: 'amazon',
+            price: 199,
+            commission: 75,
+            image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=500',
+            description: 'دورة شاملة تعلمك أسرار التسويق الرقمي من الصفر حتى الاحتراف.',
+            affiliateLink: 'https://YOUR_ID.clickbank.product'
+        },
+        {
+            id: 2,
+            title: 'كاميرا Canon EOS R5',
+            category: 'electronics',
+            platform: 'amazon',
+            price: 3899,
+            commission: 5.5,
+            image: 'https://m.media-amazon.com/images/I/71h6KpJ6pBL._AC_SL1500_.jpg',
+            description: 'كاميرا احترافية 45 ميجابكسل مع تثبيت صورة متقدم.',
+            affiliateLink: 'https://www.amazon.com/dp/B0863FBGRM?tag=YOUR_ID-20'
+        },
+        {
+            id: 3,
+            title: 'ساعة ذكية Xiaomi Mi Band 7',
+            category: 'electronics',
+            platform: 'aliexpress',
+            price: 59.99,
+            commission: 15,
+            image: 'https://ae01.alicdn.com/kf/Sd4e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8/Xiaomi-Mi-Band-7.jpg',
+            description: 'ساعة ذكية متطورة مع تتبع النشاط البدني والصحة.',
+            affiliateLink: 'https://www.aliexpress.com/item/1005001234567890.html?aff_platform=link'
+        },
+        {
+            id: 4,
+            title: 'حقيبة ظهر مقاومة للماء',
+            category: 'fashion',
+            platform: 'temu',
+            price: 24.99,
+            commission: 20,
+            image: 'https://example.com/backpack.jpg',
+            description: 'حقيبة ظهر عصرية متينة ومقاومة للماء.',
+            affiliateLink: 'https://www.temu.com/g/backpack.html?refer_id=YOUR_ID'
+        },
+        {
+            id: 5,
+            title: 'سماعات لاسلكية Sony WH-1000XM4',
+            category: 'electronics',
+            platform: 'amazon',
+            price: 349,
+            commission: 8,
+            image: 'https://m.media-amazon.com/images/I/71o8Q5XJ5mL._AC_SL1500_.jpg',
+            description: 'سماعات لاسلكية بإلغاء الضوضاء النشط وجودة صوت استثنائية.',
+            affiliateLink: 'https://www.amazon.com/dp/B0863XRM2J?tag=YOUR_ID-20'
+        },
+        {
+            id: 6,
+            title: 'طقم أدوات DIY 200 قطعة',
+            category: 'home',
+            platform: 'aliexpress',
+            price: 39.99,
+            commission: 25,
+            image: 'https://ae01.alicdn.com/kf/Sd4e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8/Tool-Set.jpg',
+            description: 'طقم أدوات متكامل لجميع أعمال الصيانة والتركيب.',
+            affiliateLink: 'https://www.aliexpress.com/item/1005001234567891.html?aff_platform=link'
+        }
+    ];
+    
+    products = mockProducts;
+    displayProducts(products);
+}
+
+// ===== Afficher les produits =====
+function displayProducts(productsToShow) {
+    const productsGrid = document.getElementById('productsGrid');
+    productsGrid.innerHTML = '';
+    
+    productsToShow.forEach(product => {
+        const productCard = createProductCard(product);
+        productsGrid.appendChild(productCard);
+    });
+}
+
+// ===== Créer une carte produit =====
+function createProductCard(product) {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    
+    const platformClass = product.platform;
+    const commissionClass = product.commission >= 20 ? 'high' : product.commission >= 10 ? 'medium' : 'low';
+    
+    card.innerHTML = `
+        <div class="product-header">
+            <img src="${product.image}" alt="${product.title}" class="product-image">
+            <div class="platform-badge ${platformClass}">${getPlatformName(product.platform)}</div>
+            <div class="commission-badge ${commissionClass}">${product.commission}%</div>
+        </div>
+        <div class="product-body">
+            <h4 class="product-title">${product.title}</h4>
+            <div class="product-category">
+                <i class="fas fa-tag"></i>
+                ${getCategoryName(product.category)}
+            </div>
+            <p class="product-description">${product.description}</p>
+            <div class="product-stats">
+                <span class="product-price">$${product.price.toFixed(2)}</span>
+                <span class="product-earnings">ربح $${(product.price * product.commission / 100).toFixed(2)}</span>
+            </div>
+            <div class="product-actions">
+                <a href="${product.affiliateLink}" target="_blank" class="btn btn-primary" onclick="trackClick(${product.id})">
+                    <i class="fas fa-shopping-cart"></i>
+                    شراء الآن
+                </a>
+                <button class="btn btn-outline" onclick="copyLink('${product.affiliateLink}')">
+                    <i class="fas fa-copy"></i>
+                    نسخ
+                </button>
+            </div>
+        </div>
+    `;
+    
+    return card;
+}
+
+// ===== Obtenir le nom de la plateforme =====
+function getPlatformName(platform) {
+    const platformNames = {
+        amazon: 'أمازون',
+        aliexpress: 'علي إكسبريس',
+        temu: 'تيمو'
+    };
+    return platformNames[platform] || platform;
+}
+
+// ===== Obtenir le nom de la catégorie =====
+function getCategoryName(category) {
+    const categoryNames = {
+        electronics: 'إلكترونيات',
+        fashion: 'أزياء',
+        home: 'منزل',
+        beauty: 'جمال',
+        digital: 'منتجات رقمية'
+    };
+    return categoryNames[category] || category;
+}
+
+// ===== Suivre les clics =====
+function trackClick(productId) {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+        // Simuler un suivi de clic
+        console.log(`Clic suivi pour le produit: ${product.title}`);
+        
+        // Mettre à jour le compteur de clics
+        const clicksElement = document.getElementById('totalClicks');
+        const currentClicks = parseInt(clicksElement.textContent.replace(',', ''));
+        clicksElement.textContent = (currentClicks + 1).toLocaleString();
+        
+        // Simuler une conversion (20% de chance)
+        if (Math.random() > 0.8) {
+            simulateSale(productId);
+        }
+    }
+}
+
+// ===== Simuler une vente =====
+function simulateSale(productId) {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+        const commission = product.price * product.commission / 100;
+        
+        // Mettre à jour les gains
+        currentEarnings.today += commission;
+        currentEarnings.week += commission;
+        currentEarnings.month += commission;
+        currentEarnings.total += commission;
         
         // Mettre à jour l'affichage
         document.getElementById('todayEarnings').textContent = '$' + currentEarnings.today.toFixed(2);
@@ -135,288 +336,34 @@ function startLiveUpdates() {
         document.getElementById('monthEarnings').textContent = '$' + currentEarnings.month.toFixed(2);
         document.getElementById('totalEarnings').textContent = '$' + currentEarnings.total.toFixed(2);
         
-        // Afficher une notification pour les gains importants
-        if (newEarning > 8) {
-            showNotification('مبيعات جديدة!', `ربحت $${newEarning.toFixed(2)} من عملية بيع جديدة`, 'success');
-        }
-    }, 5000);
-    
-    // Simuler des transactions aléatoires
-    setInterval(() => {
-        if (Math.random() > 0.7) {
-            addRandomTransaction();
-        }
-    }, 15000);
-}
-
-// ===== Traiter le retrait =====
-function processWithdrawal(event) {
-    event.preventDefault();
-    
-    const amount = parseFloat(document.getElementById('withdrawalAmount').value);
-    const method = document.getElementById('withdrawalMethod').value;
-    
-    // Valider le montant
-    if (amount > currentEarnings.total) {
-        showNotification('خطأ', 'المبلغ المطلوب أكبر من رصيدك المتاح', 'error');
-        return;
-    }
-    
-    // Désactiver le bouton et afficher le chargement
-    const button = event.target.querySelector('.withdrawal-button');
-    const originalText = button.innerHTML;
-    button.disabled = true;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري المعالجة...';
-    
-    // Simuler le processus de retrait
-    setTimeout(() => {
-        // Mettre à jour le solde
-        currentEarnings.total -= amount;
-        document.getElementById('availableBalance').textContent = '$' + currentEarnings.total.toFixed(2);
+        // Mettre à jour les statistiques
+        const salesElement = document.getElementById('totalSales');
+        const currentSales = parseInt(salesElement.textContent);
+        salesElement.textContent = currentSales + 1;
         
         // Ajouter une transaction
-        addTransaction('سحب أرباح', -$amount, 'completed');
+        addTransaction(`بيع ${product.title}`, commission, 'completed', product.platform);
         
-        // Réinitialiser le formulaire
-        event.target.reset();
-        button.disabled = false;
-        button.innerHTML = originalText;
-        
-        // Afficher une notification de succès
-        showNotification('تم بنجاح!', `تم طلب سحب $${amount.toFixed(2)} إلى ${method}`, 'success');
-    }, 2000);
-}
-
-// ===== Copier le lien =====
-function copyLink(link) {
-    navigator.clipboard.writeText(link).then(() => {
-        showNotification('تم النسخ', 'تم نسخ الرابط بنجاح', 'success');
-    }).catch(() => {
-        showNotification('خطأ', 'فشل نسخ الرابط', 'error');
-    });
-}
-
-// ===== Afficher la notification =====
-function showNotification(title, message, type = 'info') {
-    const container = document.getElementById('notificationContainer');
-    
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    
-    const iconMap = {
-        success: 'fa-check-circle',
-        error: 'fa-exclamation-circle',
-        info: 'fa-info-circle'
-    };
-    
-    notification.innerHTML = `
-        <i class="fas ${iconMap[type]} notification-icon"></i>
-        <div class="notification-content">
-            <div class="notification-title">${title}</div>
-            <div class="notification-message">${message}</div>
-        </div>
-        <i class="fas fa-times notification-close" onclick="this.parentElement.remove()"></i>
-    `;
-    
-    container.appendChild(notification);
-    
-    // Supprimer automatiquement après 5 secondes
-    setTimeout(() => {
-        notification.remove();
-    }, 5000);
-}
-
-// ===== Ajouter une transaction =====
-function addTransaction(description, amount, status) {
-    const table = document.getElementById('transactionsTable');
-    const row = table.insertRow(0);
-    
-    const now = new Date();
-    const dateStr = now.getFullYear() + '-' + 
-                  String(now.getMonth() + 1).padStart(2, '0') + '-' + 
-                  String(now.getDate()).padStart(2, '0');
-    
-    row.innerHTML = `
-        <td>${dateStr}</td>
-        <td>${description}</td>
-        <td class="${amount > 0 ? 'product-price' : ''}">$${Math.abs(amount).toFixed(2)}</td>
-        <td><span class="transaction-status ${status}">${getStatusText(status)}</span></td>
-    `;
-    
-    // Ajouter l'animation de fondu
-    row.classList.add('fade-in');
-}
-
-// ===== Obtenir le texte du statut =====
-function getStatusText(status) {
-    const statusMap = {
-        completed: 'مكتمل',
-        pending: 'قيد المعالجة',
-        failed: 'فشل'
-    };
-    return statusMap[status] || status;
-}
-
-// ===== Ajouter une transaction aléatoire =====
-function addRandomTransaction() {
-    const products = [
-        { name: 'دورة التسويق الرقمي', min: 100, max: 200 },
-        { name: 'كاميرا Canon EOS R5', min: 200, max: 300 },
-        { name: 'برنامج إدارة المشاريع', min: 50, max: 100 },
-        { name: 'Apple Watch Ultra', min: 30, max: 50 },
-        { name: 'كورس البرمجة', min: 150, max: 250 }
-    ];
-    
-    const product = products[Math.floor(Math.random() * products.length)];
-    const amount = Math.random() * (product.max - product.min) + product.min;
-    
-    addTransaction(`بيع ${product.name}`, amount, 'completed');
-    
-    // Mettre à jour les gains
-    currentEarnings.today += amount;
-    currentEarnings.week += amount;
-    currentEarnings.month += amount;
-    currentEarnings.total += amount;
-    
-    // Mettre à jour l'affichage
-    document.getElementById('todayEarnings').textContent = '$' + currentEarnings.today.toFixed(2);
-    document.getElementById('weekEarnings').textContent = '$' + currentEarnings.week.toFixed(2);
-    document.getElementById('monthEarnings').textContent = '$' + currentEarnings.month.toFixed(2);
-    document.getElementById('totalEarnings').textContent = '$' + currentEarnings.total.toFixed(2);
-    
-    // Afficher une notification
-    showNotification('مبيعات جديدة!', `ربحت $${amount.toFixed(2)} من ${product.name}`, 'success');
+        // Afficher une notification
+        showNotification('مبيعات جديدة!', `ربحت $${commission.toFixed(2)} من ${product.title}`, 'success');
+    }
 }
 
 // ===== Charger les transactions =====
 function loadTransactions() {
     // Simuler le chargement des transactions depuis le serveur
-    const transactions = [
-        { description: 'بيع دورة التسويق الرقمي', amount: 149.25, status: 'completed' },
-        { description: 'بيع كاميرا Canon EOS R5', amount: 214.45, status: 'completed' },
-        { description: 'سحب أرباح', amount: -500, status: 'completed' }
+    const mockTransactions = [
+        { description: 'بيع دورة التسويق الرقمي', amount: 149.25, platform: 'amazon', status: 'completed' },
+        { description: 'بيع كاميرا Canon EOS R5', amount: 214.45, platform: 'amazon', status: 'completed' },
+        { description: 'سحب أرباح', amount: -500, platform: 'withdrawal', status: 'completed' },
+        { description: 'بيع ساعة Xiaomi Mi Band', amount: 9.00, platform: 'aliexpress', status: 'completed' },
+        { description: 'بيع حقيبة ظهر', amount: 5.00, platform: 'temu', status: 'pending' }
     ];
     
-    transactions.forEach(transaction => {
-        addTransaction(transaction.description, transaction.amount, transaction.status);
-    });
+    transactions = mockTransactions;
+    displayTransactions();
 }
 
-// ===== Configurer les écouteurs d'événements =====
-function setupEventListeners() {
-    // Boutons de contrôle du graphique
-    document.querySelectorAll('.chart-control').forEach(button => {
-        button.addEventListener('click', function() {
-            updateChart(this.dataset.period || this.textContent);
-        });
-    });
-    
-    // Validation du formulaire
-    const withdrawalForm = document.querySelector('.withdrawal-form');
-    const amountInput = document.getElementById('withdrawalAmount');
-    const balanceDisplay = document.getElementById('availableBalance');
-    
-    // Validation en temps réel du solde
-    amountInput.addEventListener('input', function() {
-        const amount = parseFloat(this.value) || 0;
-        const balance = parseFloat(balanceDisplay.textContent.replace('$', ''));
-        
-        if (amount > balance) {
-            this.setCustomValidity('المبلغ المطلوب أكبر من رصيدك المتاح');
-        } else {
-            this.setCustomValidity('');
-        }
-    });
-    
-    // Boutons de copie de lien
-    document.querySelectorAll('.btn-outline').forEach(button => {
-        button.addEventListener('click', function() {
-            const productCard = this.closest('.product-card');
-            const buyButton = productCard.querySelector('.btn-primary');
-            const link = buyButton.getAttribute('href');
-            copyLink(link);
-        });
-    });
-    
-    // Défilement fluide pour la navigation
-    document.querySelectorAll('.nav-menu a').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-            
-            if (targetSection) {
-                targetSection.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
-}
-
-// ===== Mettre à jour le graphique =====
-function updateChart(period) {
-    // Mettre à jour le bouton actif
-    document.querySelectorAll('.chart-control').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    event.target.classList.add('active');
-    
-    // Mettre à jour les données du graphique
-    const labels = {
-        'day': ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00'],
-        'week': ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
-        'month': ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-        'year': ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
-    };
-    
-    const data = {
-        'day': [12, 19, 15, 25, 22, 30, 28, 35, 32, 40, 38, 45],
-        'week': [150, 180, 165, 200, 190, 220, 210, 240, 230, 260, 250, 280],
-        'month': [800, 950, 1100, 1250, 1400, 1550, 1700, 1850, 2000, 2150, 2300, 2450],
-        'year': [5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000, 13000, 14000, 15000, 16000]
-    };
-    
-    earningsChart.data.labels = labels[period] || labels.day;
-    earningsChart.data.datasets[0].data = data[period] || data.day;
-    earningsChart.update();
-}
-
-// ===== Simuler les gains d'affiliation =====
-function simulateAffiliateEarnings() {
-    const affiliatePrograms = [
-        { name: 'Amazon', commission: 0.055, baseAmount: 1000 },
-        { name: 'ClickBank', commission: 0.75, baseAmount: 200 },
-        { name: 'ShareASale', commission: 0.40, baseAmount: 150 }
-    ];
-    
-    affiliatePrograms.forEach(program => {
-        const randomSale = Math.random() > 0.8; // 20% de chance de vente
-        
-        if (randomSale) {
-            const amount = Math.random() * program.baseAmount + program.baseAmount * 0.5;
-            const commission = amount * program.commission;
-            
-            addTransaction(`بيع من ${program.name}`, commission, 'completed');
-            
-            // Mettre à jour les gains
-            currentEarnings.today += commission;
-            currentEarnings.week += commission;
-            currentEarnings.month += commission;
-            currentEarnings.total += commission;
-            
-            // Mettre à jour l'affichage
-            document.getElementById('todayEarnings').textContent = '$' + currentEarnings.today.toFixed(2);
-            document.getElementById('weekEarnings').textContent = '$' + currentEarnings.week.toFixed(2);
-            document.getElementById('monthEarnings').textContent = '$' + currentEarnings.month.toFixed(2);
-            document.getElementById('totalEarnings').textContent = '$' + currentEarnings.total.toFixed(2);
-            
-            // Afficher une notification
-            showNotification('عمولة جديدة!', `ربحت $${commission.toFixed(2)} عمولة من ${program.name}`, 'success');
-        }
-    });
-}
-
-// ===== Démarrer la simulation des gains d'affiliation =====
-setInterval(simulateAffiliateEarnings, 30000); // Toutes les 30 secondes
+// ===== Afficher les transactions =====
+function displayTransactions() {
+    const tableBody = document.querySelector
