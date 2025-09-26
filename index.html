@@ -32,6 +32,7 @@
                     <li><a href="#dashboard"><i class="fas fa-chart-line"></i> لوحة التحكم</a></li>
                     <li><a href="#products"><i class="fas fa-box"></i> المنتجات</a></li>
                     <li><a href="#withdrawal"><i class="fas fa-money-bill"></i> السحب</a></li>
+                    <li><a href="#analytics"><i class="fas fa-chart-bar"></i> التحليلات</a></li>
                 </ul>
             </nav>
             <div class="user-menu">
@@ -48,6 +49,55 @@
 
     <!-- Main Dashboard -->
     <main class="dashboard">
+        <!-- Platform Selector -->
+        <section class="platform-selector">
+            <div class="platform-header">
+                <h2 class="platform-title">
+                    <i class="fas fa-store"></i>
+                    اختر منصة التسوق
+                </h2>
+                <p class="platform-subtitle">استعرض المنتجات من أشهر المتاجر الإلكترونية</p>
+            </div>
+            
+            <div class="platforms-grid">
+                <div class="platform-card" data-platform="amazon">
+                    <div class="platform-icon amazon">
+                        <i class="fab fa-amazon"></i>
+                    </div>
+                    <h3>أمازون</h3>
+                    <p>أكبر متجر إلكتروني في العالم</p>
+                    <div class="commission-rate">
+                        <span class="rate">4% - 10%</span>
+                        <span>عمولة</span>
+                    </div>
+                </div>
+                
+                <div class="platform-card" data-platform="aliexpress">
+                    <div class="platform-icon aliexpress">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <h3>علي إكسبريس</h3>
+                    <p>منتجات بأسعار منافسة</p>
+                    <div class="commission-rate">
+                        <span class="rate">5% - 50%</span>
+                        <span>عمولة</span>
+                    </div>
+                </div>
+                
+                <div class="platform-card" data-platform="temu">
+                    <div class="platform-icon temu">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <h3>تيمو</h3>
+                    <p>تسوق بأسعار مخفضة</p>
+                    <div class="commission-rate">
+                        <span class="rate">5% - 20%</span>
+                        <span>عمولة</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Live Earnings -->
         <section class="live-earnings">
             <div class="live-header">
@@ -96,84 +146,133 @@
             </div>
         </section>
 
-        <!-- Products Section -->
-        <section class="products-section">
+        <!-- Analytics Section -->
+        <section class="analytics-section" id="analytics">
             <div class="section-header">
                 <h3 class="section-title">
-                    <i class="fas fa-star"></i>
-                    المنتجات الأكثر ربحًا
+                    <i class="fas fa-chart-line"></i>
+                    تحليلات الأداء
                 </h3>
+                <div class="chart-controls">
+                    <button class="chart-control active" data-period="day">يوم</button>
+                    <button class="chart-control" data-period="week">أسبوع</button>
+                    <button class="chart-control" data-period="month">شهر</button>
+                    <button class="chart-control" data-period="year">سنة</button>
+                </div>
             </div>
             
-            <div class="products-grid">
-                <!-- Product 1 -->
-                <div class="product-card">
-                    <div class="product-header">
-                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=500" alt="دورة التسويق" class="product-image">
-                        <div class="commission-badge high">75%</div>
+            <div class="chart-container">
+                <canvas id="earningsChart"></canvas>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-mouse-pointer"></i>
                     </div>
-                    <div class="product-body">
-                        <h4 class="product-title">دورة التسويق الرقمي المتقدمة</h4>
-                        <div class="product-category">
-                            <i class="fas fa-graduation-cap"></i>
-                            منتجات رقمية
-                        </div>
-                        <p class="product-description">
-                            دورة شاملة تعلمك أسرار التسويق الرقمي من الصفر حتى الاحتراف.
-                        </p>
-                        <div class="product-stats">
-                            <span class="product-price">$199</span>
-                            <span class="product-earnings">ربح $149.25</span>
-                        </div>
-                        <div class="product-actions">
-                            <a href="https://YOUR_ID.clickbank.product" target="_blank" class="btn btn-primary">
-                                <i class="fas fa-shopping-cart"></i>
-                                شراء الآن
-                            </a>
-                            <button class="btn btn-outline" onclick="copyLink('https://YOUR_ID.clickbank.product')">
-                                <i class="fas fa-copy"></i>
-                                نسخ
-                            </button>
-                        </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="totalClicks">1,247</div>
+                        <div class="stat-label">إجمالي النقرات</div>
                     </div>
                 </div>
                 
-                <!-- Product 2 -->
-                <div class="product-card">
-                    <div class="product-header">
-                        <img src="https://m.media-amazon.com/images/I/71h6KpJ6pBL._AC_SL1500_.jpg" alt="كاميرا Canon" class="product-image">
-                        <div class="commission-badge low">5.5%</div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-shopping-cart"></i>
                     </div>
-                    <div class="product-body">
-                        <h4 class="product-title">كاميرا Canon EOS R5</h4>
-                        <div class="product-category">
-                            <i class="fas fa-camera"></i>
-                            إلكترونيات
-                        </div>
-                        <p class="product-description">
-                            كاميرا احترافية 45 ميجابكسل مع تثبيت صورة متقدم.
-                        </p>
-                        <div class="product-stats">
-                            <span class="product-price">$3,899</span>
-                            <span class="product-earnings">ربح $214.45</span>
-                        </div>
-                        <div class="product-actions">
-                            <a href="https://www.amazon.com/dp/B0863FBGRM?tag=YOUR_ID-20" target="_blank" class="btn btn-primary">
-                                <i class="fas fa-shopping-cart"></i>
-                                شراء من Amazon
-                            </a>
-                            <button class="btn btn-outline" onclick="copyLink('https://www.amazon.com/dp/B0863FBGRM?tag=YOUR_ID-20')">
-                                <i class="fas fa-copy"></i>
-                                نسخ
-                            </button>
-                        </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="totalSales">89</div>
+                        <div class="stat-label">إجمالي المبيعات</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="conversionRate">7.1%</div>
+                        <div class="stat-label">معدل التحويل</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="activeReferrals">342</div>
+                        <div class="stat-label">إحالات نشطة</div>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- Products Section -->
+        <section class="products-section" id="products">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="fas fa-star"></i>
+                    المنتجات الأكثر ربحًا
+                </h3>
+                <div class="filter-controls">
+                    <select class="filter-select" id="platformFilter">
+                        <option value="all">جميع المنصات</option>
+                        <option value="amazon">أمازون</option>
+                        <option value="aliexpress">علي إكسبريس</option>
+                        <option value="temu">تيمو</option>
+                    </select>
+                    <select class="filter-select" id="categoryFilter">
+                        <option value="all">جميع الفئات</option>
+                        <option value="electronics">إلكترونيات</option>
+                        <option value="fashion">أزياء</option>
+                        <option value="home">منزل</option>
+                        <option value="beauty">جمال</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be dynamically loaded here -->
+            </div>
+            
+            <div class="load-more-container">
+                <button class="btn btn-primary load-more-btn" id="loadMoreBtn">
+                    <i class="fas fa-plus"></i>
+                    تحميل المزيد
+                </button>
+            </div>
+        </section>
+
+        <!-- Transactions Table -->
+        <section class="transactions-section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="fas fa-history"></i>
+                    سجل المعاملات
+                </h3>
+            </div>
+            
+            <div class="table-container">
+                <table class="transactions-table" id="transactionsTable">
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>الوصف</th>
+                            <th>المنصة</th>
+                            <th>المبلغ</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Transactions will be dynamically loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
         <!-- Withdrawal Section -->
-        <section class="withdrawal-section">
+        <section class="withdrawal-section" id="withdrawal">
             <div class="withdrawal-header">
                 <h3 class="section-title">
                     <i class="fas fa-money-bill-wave"></i>
@@ -196,6 +295,8 @@
                     <select id="withdrawalMethod" required>
                         <option value="binance">Binance (USDT)</option>
                         <option value="paypal">PayPal</option>
+                        <option value="wise">Wise</option>
+                        <option value="bank">تحويل بنكي</option>
                     </select>
                 </div>
                 
