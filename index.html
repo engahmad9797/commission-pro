@@ -4,11 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>كوميشن برو - منصة التسويق بالعمولة الاحترافية</title>
+    <meta name="description" content="أكبر منصة عربية للتسويق بالعمولة مع أمازون، علي إكسبريس، تيمو وإيباي. اربح من التسويق الإلكتروني">
+    <meta name="keywords" content="تسويق بالعمولة, أمازون, علي إكسبريس, تيمو, إيباي, كوميشن, تسويق إلكتروني">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="كوميشن برو - منصة التسويق بالعمولة الاحترافية">
+    <meta property="og:description" content="ابدأ رحلتك في التسويق بالعمولة مع أكبر المتاجر الإلكترونية">
+    <meta property="og:image" content="https://commissionpro.com/og-image.jpg">
+    <meta property="og:url" content="https://commissionpro.com">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="كوميشن برو - منصة التسويق بالعمولة الاحترافية">
+    <meta name="twitter:description" content="ابدأ رحلتك في التسويق بالعمولة مع أكبر المتاجر الإلكترونية">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    
+    <!-- External Libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics-compat.js"></script>
+    
+    <!-- Local Files -->
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/api.js"></script>
     <script src="js/script.js" defer></script>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF6B35">
 </head>
 <body>
     <!-- Loading Screen -->
@@ -19,6 +52,85 @@
             <p>يتم إعداد حسابك وتحميل بيانات الأرباح</p>
             <div class="loading-progress">
                 <div class="progress-bar"></div>
+            </div>
+            <div class="loading-tips">
+                <p id="loadingTip">نصيحة: شارك روابطك على وسائل التواصل الاجتماعي لزيادة الأرباح</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login/Register Modal (Initially Hidden) -->
+    <div class="modal" id="authModal">
+        <div class="modal-content auth-modal">
+            <div class="modal-header">
+                <h3>تسجيل الدخول</h3>
+                <button class="modal-close" onclick="closeModal('authModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" onclick="switchAuthTab('login')">تسجيل الدخول</button>
+                    <button class="auth-tab" onclick="switchAuthTab('register')">إنشاء حساب</button>
+                </div>
+                
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="loginEmail">البريد الإلكتروني</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">كلمة المرور</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <i class="fas fa-sign-in-alt"></i>
+                        تسجيل الدخول
+                    </button>
+                </form>
+                
+                <form id="registerForm" class="auth-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="registerName">الاسم الكامل</label>
+                        <input type="text" id="registerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">البريد الإلكتروني</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">كلمة المرور</label>
+                        <input type="password" id="registerPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPhone">رقم الهاتف</label>
+                        <input type="tel" id="registerPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" required>
+                            أوافق على <a href="#">الشروط والأحكام</a>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <i class="fas fa-user-plus"></i>
+                        إنشاء حساب
+                    </button>
+                </form>
+                
+                <div class="social-login">
+                    <p>أو سجل الدخول باستخدام</p>
+                    <div class="social-buttons">
+                        <button class="btn-social google" onclick="signInWithGoogle()">
+                            <i class="fab fa-google"></i>
+                            جوجل
+                        </button>
+                        <button class="btn-social facebook" onclick="signInWithFacebook()">
+                            <i class="fab fa-facebook-f"></i>
+                            فيسبوك
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -37,25 +149,33 @@
                     <li><a href="#referrals"><i class="fas fa-user-friends"></i> الإحالات</a></li>
                     <li><a href="#analytics"><i class="fas fa-chart-bar"></i> التحليلات</a></li>
                     <li><a href="#withdrawal"><i class="fas fa-money-bill"></i> السحب</a></li>
+                    <li><a href="#tools"><i class="fas fa-tools"></i> الأدوات</a></li>
+                    <li><a href="#academy"><i class="fas fa-graduation-cap"></i> الأكاديمية</a></li>
                 </ul>
             </nav>
             <div class="user-menu">
-                <div class="user-info">
-                    <div class="user-avatar">أ</div>
+                <div class="user-info" id="userInfo" style="display: none;">
+                    <div class="user-avatar" id="userAvatar">أ</div>
                     <div>
-                        <div style="font-weight: 700;">أحمد رنده</div>
-                        <div style="font-size: 0.85rem; opacity: 0.8;">ahmed.rande97@gmail.com</div>
+                        <div style="font-weight: 700;" id="userName">أحمد رنده</div>
+                        <div style="font-size: 0.85rem; opacity: 0.8;" id="userEmail">ahmed.rande97@gmail.com</div>
                     </div>
                 </div>
-                <div class="dropdown">
+                <button class="btn btn-outline" id="loginBtn" onclick="showModal('authModal')">
+                    <i class="fas fa-sign-in-alt"></i>
+                    تسجيل الدخول
+                </button>
+                <div class="dropdown" id="userDropdown" style="display: none;">
                     <button class="dropdown-toggle">
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="dropdown-menu">
                         <a href="#profile"><i class="fas fa-user"></i> الملف الشخصي</a>
                         <a href="#settings"><i class="fas fa-cog"></i> الإعدادات</a>
+                        <a href="#tools"><i class="fas fa-tools"></i> الأدوات</a>
                         <a href="#help"><i class="fas fa-question-circle"></i> المساعدة</a>
-                        <a href="#logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+                        <hr>
+                        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
                     </div>
                 </div>
             </div>
@@ -63,7 +183,7 @@
     </header>
 
     <!-- Main Dashboard -->
-    <main class="dashboard">
+    <main class="dashboard" id="mainDashboard" style="display: none;">
         <!-- Welcome Banner -->
         <section class="welcome-banner">
             <div class="banner-content">
@@ -71,21 +191,31 @@
                 <p>ابدأ رحلتك في التسويق بالعمولة مع أكبر المتاجر الإلكترونية</p>
                 <div class="banner-stats">
                     <div class="stat-item">
-                        <span class="stat-value">$2,847.50</span>
+                        <span class="stat-value" id="totalEarningsBanner">$0.00</span>
                         <span class="stat-label">إجمالي الأرباح</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-value">89</span>
+                        <span class="stat-value" id="totalSalesBanner">0</span>
                         <span class="stat-label">مبيعات</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-value">342</span>
+                        <span class="stat-value" id="totalReferralsBanner">0</span>
                         <span class="stat-label">إحالات</span>
                     </div>
                 </div>
             </div>
             <div class="banner-image">
                 <i class="fas fa-chart-line"></i>
+            </div>
+        </section>
+
+        <!-- Real-time Notifications -->
+        <section class="real-time-notifications">
+            <div class="notification-feed">
+                <h3><i class="fas fa-bell"></i> الإشعارات المباشرة</h3>
+                <div class="notification-list" id="notificationList">
+                    <!-- Notifications will be loaded here -->
+                </div>
             </div>
         </section>
 
@@ -100,7 +230,7 @@
             </div>
             
             <div class="platforms-grid">
-                <div class="platform-card" data-platform="amazon">
+                <div class="platform-card" data-platform="amazon" onclick="selectPlatform('amazon')">
                     <div class="platform-icon amazon">
                         <i class="fab fa-amazon"></i>
                     </div>
@@ -116,7 +246,7 @@
                     </div>
                 </div>
                 
-                <div class="platform-card" data-platform="aliexpress">
+                <div class="platform-card" data-platform="aliexpress" onclick="selectPlatform('aliexpress')">
                     <div class="platform-icon aliexpress">
                         <i class="fas fa-shopping-bag"></i>
                     </div>
@@ -132,7 +262,7 @@
                     </div>
                 </div>
                 
-                <div class="platform-card" data-platform="temu">
+                <div class="platform-card" data-platform="temu" onclick="selectPlatform('temu')">
                     <div class="platform-icon temu">
                         <i class="fas fa-tags"></i>
                     </div>
@@ -148,7 +278,7 @@
                     </div>
                 </div>
                 
-                <div class="platform-card" data-platform="ebay">
+                <div class="platform-card" data-platform="ebay" onclick="selectPlatform('ebay')">
                     <div class="platform-icon ebay">
                         <i class="fab fa-ebay"></i>
                     </div>
@@ -189,7 +319,7 @@
                     <div class="earning-value" id="todayEarnings">$0.00</div>
                     <div class="earning-label">أرباح اليوم</div>
                     <div class="earning-change positive">
-                        <i class="fas fa-arrow-up"></i> +12.5%
+                        <i class="fas fa-arrow-up"></i> +0%
                     </div>
                     <div class="earning-chart">
                         <canvas id="todayChart"></canvas>
@@ -200,7 +330,7 @@
                     <div class="earning-value" id="weekEarnings">$0.00</div>
                     <div class="earning-label">أرباح الأسبوع</div>
                     <div class="earning-change positive">
-                        <i class="fas fa-arrow-up"></i> +8.3%
+                        <i class="fas fa-arrow-up"></i> +0%
                     </div>
                     <div class="earning-chart">
                         <canvas id="weekChart"></canvas>
@@ -211,7 +341,7 @@
                     <div class="earning-value" id="monthEarnings">$0.00</div>
                     <div class="earning-label">أرباح الشهر</div>
                     <div class="earning-change positive">
-                        <i class="fas fa-arrow-up"></i> +15.7%
+                        <i class="fas fa-arrow-up"></i> +0%
                     </div>
                     <div class="earning-chart">
                         <canvas id="monthChart"></canvas>
@@ -222,7 +352,7 @@
                     <div class="earning-value" id="totalEarnings">$0.00</div>
                     <div class="earning-label">إجمالي الأرباح</div>
                     <div class="earning-change positive">
-                        <i class="fas fa-arrow-up"></i> +23.4%
+                        <i class="fas fa-arrow-up"></i> +0%
                     </div>
                     <div class="earning-chart">
                         <canvas id="totalChart"></canvas>
@@ -248,10 +378,117 @@
                 <h3>سحب سريع</h3>
                 <p>اسحب أرباحك فوراً</p>
             </div>
-            <div class="action-card" onclick="showHelpModal()">
-                <i class="fas fa-question-circle"></i>
-                <h3>المساعدة</h3>
-                <p>احصل على الدعم الفني</p>
+            <div class="action-card" onclick="showToolsModal()">
+                <i class="fas fa-tools"></i>
+                <h3>الأدوات</h3>
+                <p>استخدم أدوات التسويق المتقدمة</p>
+            </div>
+        </section>
+
+        <!-- Tools Section -->
+        <section class="tools-section" id="tools">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="fas fa-tools"></i>
+                    أدوات التسويق المتقدمة
+                </h3>
+            </div>
+            
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <h4>مولد الروابط الذكي</h4>
+                    <p>أنشئ روابط تسويقية قصيرة وقابلة للتتبع</p>
+                    <button class="btn btn-primary" onclick="openLinkGenerator()">استخدم الأداة</button>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <h4>مولد QR Codes</h4>
+                    <p>حول روابطك إلى أكواد QR سهلة المشاركة</p>
+                    <button class="btn btn-primary" onclick="openQRGenerator()">استخدم الأداة</button>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h4>محلل الروابط</h4>
+                    <p>تتبع أداء روابطك وتحليل النقرات</p>
+                    <button class="btn btn-primary" onclick="openLinkAnalyzer()">استخدم الأداة</button>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h4>منشئ التقارير</h4>
+                    <p>أنشئ تقارير مفصلة عن أدائك وأرباحك</p>
+                    <button class="btn btn-primary" onclick="openReportGenerator()">استخدم الأداة</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Academy Section -->
+        <section class="academy-section" id="academy">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="fas fa-graduation-cap"></i>
+                    أكاديمية التسويق بالعمولة
+                </h3>
+            </div>
+            
+            <div class="academy-content">
+                <div class="courses-grid">
+                    <div class="course-card">
+                        <div class="course-image">
+                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=500" alt="أساسيات التسويق">
+                        </div>
+                        <div class="course-content">
+                            <h4>أساسيات التسويق بالعمولة</h4>
+                            <p>تعلم الأساسيات والبدء في رحلتك نحو النجاح</p>
+                            <div class="course-meta">
+                                <span><i class="fas fa-clock"></i> 4 ساعات</span>
+                                <span><i class="fas fa-signal"></i> مبتدئ</span>
+                            </div>
+                            <button class="btn btn-primary">ابدأ الدورة</button>
+                        </div>
+                    </div>
+                    
+                    <div class="course-card">
+                        <div class="course-image">
+                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=500" alt="التسويق المتقدم">
+                        </div>
+                        <div class="course-content">
+                            <h4>استراتيجيات التسويق المتقدمة</h4>
+                            <p>تقنيات متقدمة لزيادة مبيعاتك وأرباحك</p>
+                            <div class="course-meta">
+                                <span><i class="fas fa-clock"></i> 8 ساعات</span>
+                                <span><i class="fas fa-signal"></i> متوسط</span>
+                            </div>
+                            <button class="btn btn-primary">ابدأ الدورة</button>
+                        </div>
+                    </div>
+                    
+                    <div class="course-card">
+                        <div class="course-image">
+                            <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=500" alt="التسويق الرقمي">
+                        </div>
+                        <div class="course-content">
+                            <h4>التسويق الرقمي الشامل</h4>
+                            <p>دورة شاملة في جميع جوانب التسويق الرقمي</p>
+                            <div class="course-meta">
+                                <span><i class="fas fa-clock"></i> 12 ساعة</span>
+                                <span><i class="fas fa-signal"></i> متقدم</span>
+                            </div>
+                            <button class="btn btn-primary">ابدأ الدورة</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -264,15 +501,15 @@
                 </h3>
                 <div class="referral-stats">
                     <div class="stat-item">
-                        <span class="stat-value" id="totalReferrals">342</span>
+                        <span class="stat-value" id="totalReferrals">0</span>
                         <span class="stat-label">إجمالي الإحالات</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-value" id="activeReferrals">128</span>
+                        <span class="stat-value" id="activeReferrals">0</span>
                         <span class="stat-label">إحالات نشطة</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-value" id="referralEarnings">$1,247.50</span>
+                        <span class="stat-value" id="referralEarnings">$0.00</span>
                         <span class="stat-label">أرباح الإحالات</span>
                     </div>
                 </div>
@@ -282,7 +519,7 @@
                 <div class="referral-link-box">
                     <h4>رابط الإحالة الخاص بك</h4>
                     <div class="link-container">
-                        <input type="text" id="referralLink" value="https://commissionpro.com/ref/ahmedrande97" readonly>
+                        <input type="text" id="referralLink" value="https://commissionpro.com/ref/" readonly>
                         <button class="btn btn-primary" onclick="copyReferralLink()">
                             <i class="fas fa-copy"></i>
                             نسخ
@@ -319,40 +556,8 @@
             
             <div class="referral-leaderboard">
                 <h4>قائمة المتصدرين</h4>
-                <div class="leaderboard-list">
-                    <div class="leaderboard-item">
-                        <div class="rank">1</div>
-                        <div class="user-info">
-                            <div class="user-avatar">م</div>
-                            <div>
-                                <div class="user-name">محمد أحمد</div>
-                                <div class="user-stats">1,247 إحالة</div>
-                            </div>
-                        </div>
-                        <div class="earnings">$12,450</div>
-                    </div>
-                    <div class="leaderboard-item">
-                        <div class="rank">2</div>
-                        <div class="user-info">
-                            <div class="user-avatar">س</div>
-                            <div>
-                                <div class="user-name">سارة خالد</div>
-                                <div class="user-stats">982 إحالة</div>
-                            </div>
-                        </div>
-                        <div class="earnings">$9,820</div>
-                    </div>
-                    <div class="leaderboard-item">
-                        <div class="rank">3</div>
-                        <div class="user-info">
-                            <div class="user-avatar">أ</div>
-                            <div>
-                                <div class="user-name">أحمد رنده</div>
-                                <div class="user-stats">342 إحالة</div>
-                            </div>
-                        </div>
-                        <div class="earnings">$2,847</div>
-                    </div>
+                <div class="leaderboard-list" id="leaderboardList">
+                    <!-- Leaderboard will be loaded here -->
                 </div>
             </div>
         </section>
@@ -383,10 +588,10 @@
                             <i class="fas fa-mouse-pointer"></i>
                         </div>
                         <div class="stat-content">
-                            <div class="stat-value" id="totalClicks">1,247</div>
+                            <div class="stat-value" id="totalClicks">0</div>
                             <div class="stat-label">إجمالي النقرات</div>
                             <div class="stat-change positive">
-                                <i class="fas fa-arrow-up"></i> 12.5%
+                                <i class="fas fa-arrow-up"></i> 0%
                             </div>
                         </div>
                     </div>
@@ -396,10 +601,10 @@
                             <i class="fas fa-shopping-cart"></i>
                         </div>
                         <div class="stat-content">
-                            <div class="stat-value" id="totalSales">89</div>
+                            <div class="stat-value" id="totalSales">0</div>
                             <div class="stat-label">إجمالي المبيعات</div>
                             <div class="stat-change positive">
-                                <i class="fas fa-arrow-up"></i> 8.3%
+                                <i class="fas fa-arrow-up"></i> 0%
                             </div>
                         </div>
                     </div>
@@ -409,10 +614,10 @@
                             <i class="fas fa-percentage"></i>
                         </div>
                         <div class="stat-content">
-                            <div class="stat-value" id="conversionRate">7.1%</div>
+                            <div class="stat-value" id="conversionRate">0%</div>
                             <div class="stat-label">معدل التحويل</div>
-                            <div class="stat-change negative">
-                                <i class="fas fa-arrow-down"></i> 2.1%
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> 0%
                             </div>
                         </div>
                     </div>
@@ -422,10 +627,10 @@
                             <i class="fas fa-users"></i>
                         </div>
                         <div class="stat-content">
-                            <div class="stat-value" id="activeReferrals">342</div>
+                            <div class="stat-value" id="activeReferrals">0</div>
                             <div class="stat-label">إحالات نشطة</div>
                             <div class="stat-change positive">
-                                <i class="fas fa-arrow-up"></i> 15.7%
+                                <i class="fas fa-arrow-up"></i> 0%
                             </div>
                         </div>
                     </div>
@@ -442,22 +647,22 @@
                         <div class="legend-item">
                             <span class="legend-color amazon"></span>
                             <span class="legend-label">أمازون</span>
-                            <span class="legend-value">$1,247</span>
+                            <span class="legend-value" id="amazonEarnings">$0</span>
                         </div>
                         <div class="legend-item">
                             <span class="legend-color aliexpress"></span>
                             <span class="legend-label">علي إكسبريس</span>
-                            <span class="legend-value">$856</span>
+                            <span class="legend-value" id="aliexpressEarnings">$0</span>
                         </div>
                         <div class="legend-item">
                             <span class="legend-color temu"></span>
                             <span class="legend-label">تيمو</span>
-                            <span class="legend-value">$445</span>
+                            <span class="legend-value" id="temuEarnings">$0</span>
                         </div>
                         <div class="legend-item">
                             <span class="legend-color ebay"></span>
                             <span class="legend-label">إيباي</span>
-                            <span class="legend-value">$299</span>
+                            <span class="legend-value" id="ebayEarnings">$0</span>
                         </div>
                     </div>
                 </div>
@@ -550,7 +755,7 @@
                     سحب الأرباح
                 </h3>
                 <div class="balance-info">
-                    <span class="balance-value" id="availableBalance">$2,847.50</span>
+                    <span class="balance-value" id="availableBalance">$0.00</span>
                     <span class="balance-currency">USD</span>
                 </div>
             </div>
@@ -560,7 +765,7 @@
                     <form class="withdrawal-form" onsubmit="processWithdrawal(event)">
                         <div class="form-group">
                             <label for="withdrawalAmount">المبلغ ($)</label>
-                            <input type="number" id="withdrawalAmount" min="10" max="2847.50" step="0.01" value="100" required>
+                            <input type="number" id="withdrawalAmount" min="10" step="0.01" value="100" required>
                             <div class="balance-hint">الحد الأدنى للسحب: $10</div>
                         </div>
                         
@@ -588,243 +793,199 @@
                 
                 <div class="withdrawal-history">
                     <h4>تاريخ السحوبات</h4>
-                    <div class="withdrawal-list">
-                        <div class="withdrawal-item">
-                            <div class="withdrawal-info">
-                                <div class="withdrawal-amount">$500.00</div>
-                                <div class="withdrawal-method">PayPal</div>
-                                <div class="withdrawal-date">15 أكتوبر 2023</div>
-                            </div>
-                            <div class="withdrawal-status completed">
-                                <i class="fas fa-check-circle"></i>
-                                مكتمل
-                            </div>
-                        </div>
-                        <div class="withdrawal-item">
-                            <div class="withdrawal-info">
-                                <div class="withdrawal-amount">$300.00</div>
-                                <div class="withdrawal-method">Binance</div>
-                                <div class="withdrawal-date">10 أكتوبر 2023</div>
-                            </div>
-                            <div class="withdrawal-status completed">
-                                <i class="fas fa-check-circle"></i>
-                                مكتمل
-                            </div>
-                        </div>
-                        <div class="withdrawal-item">
-                            <div class="withdrawal-info">
-                                <div class="withdrawal-amount">$200.00</div>
-                                <div class="withdrawal-method">Wise</div>
-                                <div class="withdrawal-date">5 أكتوبر 2023</div>
-                            </div>
-                            <div class="withdrawal-status pending">
-                                <i class="fas fa-clock"></i>
-                                قيد المعالجة
-                            </div>
-                        </div>
+                    <div class="withdrawal-list" id="withdrawalList">
+                        <!-- Withdrawal history will be loaded here -->
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Modals -->
-    <div class="modal" id="shareModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>مشاركة الروابط</h3>
-                <button class="modal-close" onclick="closeModal('shareModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="share-options">
-                    <div class="share-option" onclick="generateProductLink()">
-                        <i class="fas fa-link"></i>
-                        <h4>رابط منتج</h4>
-                        <p>أنشئ رابط تسويق لمنتج معين</p>
-                    </div>
-                    <div class="share-option" onclick="generateStoreLink()">
-                        <i class="fas fa-store"></i>
-                        <h4>رابط متجر</h4>
-                        <p>أنشئ رابط لمتجر كامل</p>
-                    </div>
-                    <div class="share-option" onclick="generateCategoryLink()">
-                        <i class="fas fa-tags"></i>
-                        <h4>رابط فئة</h4>
-                        <p>أنشئ رابط لفئة منتجات</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="referralModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>دعوة أصدقاء</h3>
-                <button class="modal-close" onclick="closeModal('referralModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="referral-invite">
-                    <h4>رابط الدعوة الخاص بك</h4>
-                    <div class="link-container">
-                        <input type="text" id="inviteLink" value="https://commissionpro.com/invite/ahmedrande97" readonly>
-                        <button class="btn btn-primary" onclick="copyInviteLink()">
-                            <i class="fas fa-copy"></i>
-                            نسخ
-                        </button>
-                    </div>
-                    <div class="referral-benefits">
-                        <h5>مميزات الدعوة:</h5>
-                        <ul>
-                            <li>احصل على 10% من أرباح من تدعوهم مدى الحياة</li>
-                            <li>مكافآت خاصة عند وصول إحالاتك لأهداف معينة</li>
-                            <li>وصول لمحتوى حصري وأدوات تسويق متقدمة</li>
-                        </ul>
-                    </div>
-                    <div class="invite-methods">
-                        <h5>طرق الدعوة:</h5>
-                        <div class="invite-buttons">
-                            <button class="btn-social facebook" onclick="shareOnSocial('facebook')">
-                                <i class="fab fa-facebook"></i>
-                                فيسبوك
-                            </button>
-                            <button class="btn-social twitter" onclick="shareOnSocial('twitter')">
-                                <i class="fab fa-twitter"></i>
-                                تويتر
-                            </button>
-                            <button class="btn-social whatsapp" onclick="shareOnSocial('whatsapp')">
-                                <i class="fab fa-whatsapp"></i>
-                                واتساب
-                            </button>
-                            <button class="btn-social email" onclick="shareViaEmail()">
-                                <i class="fas fa-envelope"></i>
-                                بريد إلكتروني
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="withdrawalModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>سحب سريع</h3>
-                <button class="modal-close" onclick="closeModal('withdrawalModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="quick-withdrawal">
-                    <div class="withdrawal-amounts">
-                        <h4>اختر المبلغ</h4>
-                        <div class="amount-buttons">
-                            <button class="amount-btn" onclick="setWithdrawalAmount(50)">$50</button>
-                            <button class="amount-btn" onclick="setWithdrawalAmount(100)">$100</button>
-                            <button class="amount-btn" onclick="setWithdrawalAmount(250)">$250</button>
-                            <button class="amount-btn" onclick="setWithdrawalAmount(500)">$500</button>
-                        </div>
-                    </div>
-                    <div class="withdrawal-methods">
-                        <h4>اختر الطريقة</h4>
-                        <div class="method-options">
-                            <label class="method-option">
-                                <input type="radio" name="quickMethod" value="binance" checked>
-                                <div class="method-card">
-                                    <i class="fab fa-bitcoin"></i>
-                                    <span>Binance</span>
-                                </div>
-                            </label>
-                            <label class="method-option">
-                                <input type="radio" name="quickMethod" value="paypal">
-                                <div class="method-card">
-                                    <i class="fab fa-paypal"></i>
-                                    <span>PayPal</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary btn-large" onclick="processQuickWithdrawal()">
-                        <i class="fas fa-paper-plane"></i>
-                        سحب الآن
+    <!-- Landing Page (Shown when not logged in) -->
+    <div class="landing-page" id="landingPage">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>ابدأ رحلتك في التسويق بالعمولة</h1>
+                <p>انضم إلى أكبر منصة عربية للتسويق بالعمولة وابدأ في كسب المال من التسويق الإلكتروني</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary btn-large" onclick="showModal('authModal')">
+                        <i class="fas fa-rocket"></i>
+                        ابدأ الآن
+                    </button>
+                    <button class="btn btn-outline btn-large" onclick="scrollToSection('features')">
+                        <i class="fas fa-info-circle"></i>
+                        تعرف أكثر
                     </button>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <section class="features" id="features">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-store"></i>
+                    <h3>متاجر متعددة</h3>
+                    <p>سوّق لأكبر المتاجر الإلكترونية مثل أمازون وعلي إكسبريس</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>تتبع مباشر</h3>
+                    <p>تابع أرباحك ومبيعاتك بشكل مباشر وفي الوقت الفعلي</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-users"></i>
+                    <h3>نظام إحالات</h3>
+                    <p>احصل على عمولة من إحالاتك مدى الحياة</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-tools"></i>
+                    <h3>أدوات متقدمة</h3>
+                    <p>استخدم أدوات التسويق المتقدمة لزيادة مبيعاتك</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="testimonials">
+            <h2>ماذا يقول عملاؤنا</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        "كوميشن برو غيرت حياتي! الآن أربح أكثر من 5000 دولار شهرياً من التسويق بالعمولة"
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">م</div>
+                        <div>
+                            <div class="author-name">محمد أحمد</div>
+                            <div class="author-title">مسوق رقمي</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        "أفضل منصة للتسويق بالعمولة في العالم العربي. واجهة سهلة وأدوات قوية"
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">س</div>
+                        <div>
+                            <div class="author-name">سارة خالد</div>
+                            <div class="author-title">مدونة محتوى</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        "بدأت من الصفر والآن أربح شهرياً ما يعادل راتبي السابق. شكراً كوميشن برو!"
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">أ</div>
+                        <div>
+                            <div class="author-name">أحمد رنده</div>
+                            <div class="author-title">مطور ويب</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <h2>هل أنت مستعد للبدء؟</h2>
+            <p>انضم إلى آلاف المسوقين الناجحين وابدأ في كسب المال من التسويق بالعمولة</p>
+            <button class="btn btn-primary btn-large" onclick="showModal('authModal')">
+                <i class="fas fa-rocket"></i>
+                سجل الآن مجاناً
+            </button>
+        </section>
     </div>
 
-    <div class="modal" id="helpModal">
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>كوميشن برو</h4>
+                <p>أكبر منصة عربية للتسويق بالعمولة</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h4>روابط سريعة</h4>
+                <ul>
+                    <li><a href="#about">من نحن</a></li>
+                    <li><a href="#how-it-works">كيف يعمل</a></li>
+                    <li><a href="#pricing">الأسعار</a></li>
+                    <li><a href="#contact">اتصل بنا</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>الدعم</h4>
+                <ul>
+                    <li><a href="#help">مركز المساعدة</a></li>
+                    <li><a href="#faq">الأسئلة الشائعة</a></li>
+                    <li><a href="#terms">الشروط والأحكام</a></li>
+                    <li><a href="#privacy">سياسة الخصوصية</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>النشرة البريدية</h4>
+                <p>اشترك للحصول على أحدث العروض والنصائح</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="بريدك الإلكتروني" required>
+                    <button type="submit" class="btn btn-primary">اشترك</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 كوميشن برو. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <!-- Existing modals remain the same -->
+    
+    <!-- New Tools Modal -->
+    <div class="modal" id="toolsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>المساعدة والدعم</h3>
-                <button class="modal-close" onclick="closeModal('helpModal')">
+                <h3>الأدوات المتقدمة</h3>
+                <button class="modal-close" onclick="closeModal('toolsModal')">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <div class="help-content">
-                    <div class="help-section">
-                        <h4>الأسئلة الشائعة</h4>
-                        <div class="faq-list">
-                            <div class="faq-item">
-                                <div class="faq-question" onclick="toggleFAQ(this)">
-                                    كيف أبدأ في التسويق بالعمولة؟
-                                    <i class="fas fa-chevron-down"></i>
-                                </div>
-                                <div class="faq-answer">
-                                    يمكنك البدء بتسجيل حساب في منصتنا، ثم اختيار المنتجات التي تريد التسويق لها ونسخ روابطها التابعة ومشاركتها مع جمهورك.
-                                </div>
-                            </div>
-                            <div class="faq-item">
-                                <div class="faq-question" onclick="toggleFAQ(this)">
-                                    متى يتم تحديث الأرباح؟
-                                    <i class="fas fa-chevron-down"></i>
-                                </div>
-                                <div class="faq-answer">
-                                    يتم تحديث الأرباح فوراً عند إتمام عملية الشراء، وتظهر في لوحة التحكم خلال دقائق قليلة.
-                                </div>
-                            </div>
-                            <div class="faq-item">
-                                <div class="faq-question" onclick="toggleFAQ(this)">
-                                    ما هي طرق السحب المتاحة؟
-                                    <i class="fas fa-chevron-down"></i>
-                                </div>
-                                <div class="faq-answer">
-                                    نحن ندعم السحب عبر Binance (USDT)، PayPal، Wise، والتحويل البنكي المباشر.
-                                </div>
-                            </div>
+                <div class="tools-list">
+                    <div class="tool-item" onclick="openLinkGenerator()">
+                        <i class="fas fa-link"></i>
+                        <div>
+                            <h4>مولد الروابط الذكي</h4>
+                            <p>أنشئ روابط تسويقية قصيرة وقابلة للتتبع</p>
                         </div>
                     </div>
-                    
-                    <div class="help-section">
-                        <h4>تواصل معنا</h4>
-                        <div class="contact-options">
-                            <div class="contact-option">
-                                <i class="fas fa-envelope"></i>
-                                <div>
-                                    <h5>البريد الإلكتروني</h5>
-                                    <p>support@commissionpro.com</p>
-                                </div>
-                            </div>
-                            <div class="contact-option">
-                                <i class="fas fa-comments"></i>
-                                <div>
-                                    <h5>الدردشة المباشرة</h5>
-                                    <p>متاحة من 9 صباحاً حتى 5 مساءً</p>
-                                </div>
-                            </div>
-                            <div class="contact-option">
-                                <i class="fas fa-phone"></i>
-                                <div>
-                                    <h5>الهاتف</h5>
-                                    <p>+966 50 123 4567</p>
-                                </div>
-                            </div>
+                    <div class="tool-item" onclick="openQRGenerator()">
+                        <i class="fas fa-qrcode"></i>
+                        <div>
+                            <h4>مولد QR Codes</h4>
+                            <p>حول روابطك إلى أكواد QR سهلة المشاركة</p>
+                        </div>
+                    </div>
+                    <div class="tool-item" onclick="openLinkAnalyzer()">
+                        <i class="fas fa-chart-pie"></i>
+                        <div>
+                            <h4>محلل الروابط</h4>
+                            <p>تتبع أداء روابطك وتحليل النقرات</p>
+                        </div>
+                    </div>
+                    <div class="tool-item" onclick="openReportGenerator()">
+                        <i class="fas fa-file-alt"></i>
+                        <div>
+                            <h4>منشئ التقارير</h4>
+                            <p>أنشئ تقارير مفصلة عن أدائك وأرباحك</p>
                         </div>
                     </div>
                 </div>
@@ -834,5 +995,16 @@
 
     <!-- Notification Container -->
     <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').then(registration => {
+                console.log('ServiceWorker registration successful');
+            }).catch(err => {
+                console.log('ServiceWorker registration failed: ', err);
+            });
+        }
+    </script>
 </body>
 </html>
