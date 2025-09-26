@@ -1,0 +1,337 @@
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #0a0a0a;
+    color: #e0e0e0;
+}
+
+.dark-mode .header {
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+}
+
+.dark-mode .nav-menu a {
+    color: #e0e0e0;
+}
+
+.dark-mode .user-info {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .dropdown-menu {
+    background: #1a1a1a;
+    color: #e0e0e0;
+}
+
+.dark-mode .dropdown-menu a {
+    color: #e0e0e0;
+}
+
+.dark-mode .dropdown-menu a:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .dashboard {
+    background-color: #0a0a0a;
+}
+
+.dark-mode .welcome-banner {
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+}
+
+.dark-mode .stat-item {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .stat-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .quick-actions-bar {
+    background: #1a1a1a;
+}
+
+.dark-mode .action-item {
+    background: #2a2a2a;
+    color: #e0e0e0;
+}
+
+.dark-mode .action-item:hover {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.dark-mode .live-earnings,
+.dark-mode .platform-selector,
+.dark-mode .campaigns-section,
+.dark-mode .analytics-section,
+.dark-mode .tools-section,
+.dark-mode .academy-section,
+.dark-mode .rewards-section,
+.dark-mode .products-section,
+.dark-mode .transactions-section,
+.dark-mode .withdrawal-section {
+    background: #1a1a1a;
+}
+
+.dark-mode .earnings-card,
+.dark-mode .platform-card,
+.dark-mode .campaign-card,
+.dark-mode .analytics-card,
+.dark-mode .tool-card,
+.dark-mode .course-card,
+.dark-mode .achievement-card,
+.dark-mode .product-card,
+.dark-mode .withdrawal-form-container,
+.dark-mode .withdrawal-history {
+    background: #2a2a2a;
+}
+
+.dark-mode .earnings-card.large {
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+}
+
+.dark-mode .card-header h4,
+.dark-mode .section-title,
+.dark-mode .platform-title,
+.dark-mode .campaign-info h4,
+.dark-mode .tool-card h4,
+.dark-mode .course-header h4,
+.dark-mode .achievement-card h5,
+.dark-mode .product-title,
+.dark-mode .form-header h4 {
+    color: #e0e0e0;
+}
+
+.dark-mode .stat-value,
+.dark-mode .earnings-value,
+.dark-mode .metric-value,
+.dark-mode .product-price {
+    color: #ffffff;
+}
+
+.dark-mode .stat-label,
+.dark-mode .earnings-label,
+.dark-mode .metric-label,
+.dark-mode .product-category,
+.dark-mode .product-description {
+    color: #b0b0b0;
+}
+
+.dark-mode .progress-bar {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .filter-select,
+.dark-mode .form-group input,
+.dark-mode .form-group select {
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+    color: #e0e0e0;
+}
+
+.dark-mode .filter-select:focus,
+.dark-mode .form-group input:focus,
+.dark-mode .form-group select:focus {
+    border-color: var(--primary);
+}
+
+.dark-mode .btn-outline {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.dark-mode .btn-outline:hover {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.dark-mode .table-container {
+    background: #1a1a1a;
+}
+
+.dark-mode .transactions-table {
+    background: #1a1a1a;
+    color: #e0e0e0;
+}
+
+.dark-mode .transactions-table th {
+    background: #2a2a2a;
+    color: #e0e0e0;
+}
+
+.dark-mode .transactions-table td {
+    border-color: #3a3a3a;
+}
+
+.dark-mode .transactions-table tr:hover {
+    background: rgba(255, 107, 53, 0.1);
+}
+
+.dark-mode .modal-content {
+    background: #1a1a1a;
+    color: #e0e0e0;
+}
+
+.dark-mode .modal-header {
+    border-color: #3a3a3a;
+}
+
+.dark-mode .modal-header h3 {
+    color: #e0e0e0;
+}
+
+.dark-mode .modal-close {
+    color: #b0b0b0;
+}
+
+.dark-mode .modal-close:hover {
+    background: #2a2a2a;
+    color: #e0e0e0;
+}
+
+.dark-mode .auth-tabs {
+    border-color: #3a3a3a;
+}
+
+.dark-mode .auth-tab {
+    color: #b0b0b0;
+}
+
+.dark-mode .auth-tab.active {
+    color: var(--primary);
+}
+
+.dark-mode .auth-tab.active::after {
+    background: var(--primary);
+}
+
+.dark-mode .form-section {
+    background: #2a2a2a;
+}
+
+.dark-mode .platform-checkbox {
+    background: #2a2a2a;
+}
+
+.dark-mode .platform-checkbox:hover {
+    background: #3a3a3a;
+}
+
+.dark-mode .notification {
+    background: #2a2a2a;
+    color: #e0e0e0;
+}
+
+.dark-mode .notification-title {
+    color: #ffffff;
+}
+
+.dark-mode .notification-message {
+    color: #b0b0b0;
+}
+
+.dark-mode .features.enhanced,
+.dark-mode .testimonials.enhanced {
+    background: #1a1a1a;
+}
+
+.dark-mode .feature-card.enhanced,
+.dark-mode .testimonial-card.enhanced {
+    background: #2a2a2a;
+}
+
+.dark-mode .feature-card.enhanced h3,
+.dark-mode .testimonial-author .author-name {
+    color: #e0e0e0;
+}
+
+.dark-mode .feature-card.enhanced p,
+.dark-mode .testimonial-content p {
+    color: #b0b0b0;
+}
+
+.dark-mode .cta.enhanced {
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+}
+
+.dark-mode .footer {
+    background: #0a0a0a;
+}
+
+.dark-mode .footer-section ul li a {
+    color: #b0b0b0;
+}
+
+.dark-mode .footer-section ul li a:hover {
+    color: var(--primary);
+}
+
+.dark-mode .social-link {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .social-link:hover {
+    background: var(--primary);
+}
+
+.dark-mode .newsletter-form input {
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+    color: #e0e0e0;
+}
+
+.dark-mode .footer-bottom {
+    border-color: #3a3a3a;
+}
+
+.dark-mode .footer-bottom p,
+.dark-mode .footer-links a {
+    color: #b0b0b0;
+}
+
+.dark-mode .footer-links a:hover {
+    color: var(--primary);
+}
+
+/* Dark mode scrollbar */
+.dark-mode::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dark-mode::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+.dark-mode::-webkit-scrollbar-thumb {
+    background: #3a3a3a;
+    border-radius: 4px;
+}
+
+.dark-mode::-webkit-scrollbar-thumb:hover {
+    background: #4a4a4a;
+}
+
+/* Dark mode specific animations */
+.dark-mode .loading-screen {
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+}
+
+.dark-mode .floating-icons i {
+    opacity: 0.2;
+}
+
+.dark-mode .live-dot {
+    background: #4CAF50;
+}
+
+.dark-mode .progress-bar {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .progress-fill {
+    background: var(--primary);
+}
+
+/* Dark mode transitions */
+.dark-mode * {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
