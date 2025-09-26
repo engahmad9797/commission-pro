@@ -1,0 +1,19 @@
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto('https://www.temu.com/search_result.html?q=smartwatch');
+
+  const products = await page.evaluate(() => {
+    return Array.from(document.querySelectorAll('.search-result-card-wrapper')).map(product => ({
+      title: product.querySelector('.product-title')?.innerText,
+      image: product.querySelector('img')?.src,
+      price: product.querySelector('.product-price')?.innerText,
+      link: product.querySelector('a')?.href
+    }));
+  });
+
+  console.log(products);
+  await browser.close();
+})();
