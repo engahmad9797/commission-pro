@@ -1,0 +1,46 @@
+CREATE TABLE IF NOT EXISTS clicks (
+  id TEXT PRIMARY KEY,
+  productId TEXT,
+  platform TEXT,
+  userId INTEGER,
+  ip TEXT,
+  ua TEXT,
+  meta TEXT,
+  status TEXT,
+  orderId TEXT,
+  createdAt TEXT,
+  convertedAt TEXT
+);
+
+CREATE TABLE IF NOT EXISTS affiliate_links (
+  id TEXT PRIMARY KEY,
+  productId TEXT,
+  platform TEXT,
+  userId INTEGER,
+  clickId TEXT,
+  url TEXT,
+  createdAt TEXT
+);
+
+CREATE TABLE IF NOT EXISTS transactions (
+  id TEXT PRIMARY KEY,
+  userId INTEGER,
+  platform TEXT,
+  amount REAL,
+  orderId TEXT,
+  clickId TEXT,
+  status TEXT,
+  createdAt TEXT
+);
+
+CREATE TABLE IF NOT EXISTS withdrawals (
+  id TEXT PRIMARY KEY,
+  userId INTEGER,
+  amount REAL,
+  method TEXT,
+  details TEXT,
+  status TEXT,
+  createdAt TEXT,
+  approvedAt TEXT,
+  completedAt TEXT
+);
