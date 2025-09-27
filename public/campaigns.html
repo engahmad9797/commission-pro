@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>🎯 الحملات التسويقية - Commission Pro</title>
+
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/dark-mode.css">
+
+  <style>
+    body { font-family: Tahoma, sans-serif; margin:0; padding:0; background:#f9f9f9; }
+    header { background:#111; color:#fff; padding:15px; text-align:center; }
+    .container { padding:20px; }
+    form { background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1); margin-bottom:30px; }
+    form input, form select { width:100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:5px; }
+    form button { background:#4CAF50; color:#fff; border:none; padding:10px; cursor:pointer; border-radius:5px; }
+    form button:hover { background:#45a049; }
+    table { width:100%; border-collapse:collapse; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+    th, td { padding:12px; border:1px solid #ddd; text-align:center; }
+    th { background:#f1f1f1; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎯 الحملات التسويقية</h1>
+  </header>
+  <div class="container">
+
+    <!-- إضافة حملة جديدة -->
+    <form id="campaignForm">
+      <h3>➕ إنشاء حملة جديدة</h3>
+      <input id="name" placeholder="اسم الحملة">
+      <select id="platform">
+        <option value="amazon">Amazon</option>
+        <option value="ebay">eBay</option>
+        <option value="aliexpress">AliExpress</option>
+        <option value="temu">Temu</option>
+        <option value="shein">Shein</option>
+      </select>
+      <input id="productId" placeholder="معرف المنتج (Product ID)">
+      <input id="budget" type="number" placeholder="الميزانية ($)">
+      <input id="duration" type="number" placeholder="المدة (أيام)">
+      <button type="submit">إنشاء</button>
+      <div id="formMsg" style="margin-top:10px; color:green;"></div>
+    </form>
+
+    <!-- جدول الحملات -->
+    <table>
+      <thead>
+        <tr>
+          <th>اسم الحملة</th>
+          <th>المنصة</th>
+          <th>المنتج</th>
+          <th>الميزانية</th>
+          <th>النقرات</th>
+          <th>المبيعات</th>
+          <th>الأرباح</th>
+          <th>الحالة</th>
+        </tr>
+      </thead>
+      <tbody id="campaignsTable"></tbody>
+    </table>
+  </div>
+
+<script>
+async function loadCampaigns() {
+  const res = await fetch('/api/campaigns', { credentials:'include' });
+  if (!res.ok) return;
+  const data = await res.json();
+  const tbody = document.getElementById('campaignsTable');
+  tbody.innerHTML = '';
+  data.forEach(c => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${c.name}</td>
+      <td>${c.platform}</td>
+      <td>${c.productId}</td>
+      <td>$${c.budget}</td>
+      <td>${c.clicks}</td>
+      <td>${c.sales}</td>
+      <td>$${c.revenue}</td>
+      <td>${c.status}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById('campaignForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('name').value;
+  const platform = document.getElementById('platform').value;
+  const productId = document.getElementById('productId').value;
+  const budget = Number(document.getElementById('budget').value);
+  const duration = Number(document.getElementById('duration').value);
+
+  const r = await fetch('/api/campaigns', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    credentials:'include',
+    body: JSON.stringify({ name, platform, productId, budget, duration })
+  });
+  const j = await r.json();
+  if (r.ok) {
+    document.getElementById('formMsg').textContent = "✅ تم إنشاء الحملة";
+    loadCampaigns();
+  } else {
+    document.getElementById('formMsg').textContent = "❌ خطأ: " + (j.error || 'غير معروف');
+    document.getElementById('formMsg').style.color = 'red';
+  }
+});
+
+// تحميل أولي + تحديث كل دقيقة
+loadCampaigns();
+setInterval(loadCampaigns, 60000);
+</script>
+</body>
+</html>
