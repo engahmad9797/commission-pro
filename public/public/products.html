@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>منتجات كوميشن برو</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dark-mode.css">
+  <style>
+    body { font-family: Tahoma, sans-serif; margin:0; padding:0; background:#f5f5f5; }
+    header { background:#111; color:#fff; padding:15px; text-align:center; }
+    #filters { padding:15px; background:#fff; display:flex; gap:10px; flex-wrap:wrap; }
+    #products { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:15px; padding:15px; }
+    .product-card { background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1); overflow:hidden; display:flex; flex-direction:column; }
+    .product-card img { width:100%; height:180px; object-fit:cover; }
+    .product-info { padding:10px; flex:1; display:flex; flex-direction:column; }
+    .product-title { font-size:14px; font-weight:bold; margin-bottom:5px; flex:1; }
+    .product-price { color:#28a745; font-size:16px; font-weight:bold; margin:5px 0; }
+    .buy-btn { background:#ff6600; color:#fff; border:none; padding:10px; text-align:center; cursor:pointer; border-radius:5px; }
+    .buy-btn:hover { background:#e55b00; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📦 كتالوج المنتجات</h1>
+  </header>
+
+  <div id="filters">
+    <input type="text" id="searchInput" placeholder="ابحث عن منتج..." style="flex:1;padding:8px">
+    <select id="platformFilter">
+      <option value="all">كل المنصات</option>
+      <option value="amazon">Amazon</option>
+      <option value="ebay">eBay</option>
+      <option value="aliexpress">AliExpress</option>
+      <option value="temu">Temu</option>
+      <option value="shein">Shein</option>
+    </select>
+    <select id="sortSelect">
+      <option value="latest">الأحدث</option>
+      <option value="priceAsc">السعر ↑</option>
+      <option value="priceDesc">السعر ↓</option>
+    </select>
+  </div>
+
+  <div id="products"></div>
+
+<script>
+async function fetchProducts() {
+  const res = await fetch('/api/products'); // تحتاج endpoint
+  const data = await res.json();
+  return data.products || [];
+}
+
+function renderProducts(list) {
+  const container = document.getElementById('products');
+  container.innerHTML = '';
+  list.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+      <img src="${p.image || '/placeholder.png'}" alt="">
+      <div class="product-info">
+        <div class="product-title">${p.title}</div>
+        <div class="product-price">$${p.price || 0}</div>
+        <button class="buy-btn" onclick="buyProduct('${p.id}','${p.platform}')">اشتري الآن</button>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+async function buyProduct(productId, platform) {
+  // سجل نقرة + اطلب رابط affiliate
+  const clickRes = await fetch('/api/track-click', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ productId, platform })
+  });
+  const { clickId } = await clickRes.json();
+
+  const linkRes = await fetch('/api/generate-affiliate-link', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ productId, platform, clickId })
+  });
+  const { affiliateUrl } = await linkRes.json();
+  window.open(affiliateUrl, '_blank');
+}
+
+async function init() {
+  let products = await fetchProducts();
+  let filtered = products;
+
+  function applyFilters() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const platform = document.getElementById('platformFilter').value;
+    const sort = document.getElementById('sortSelect').value;
+
+    filtered = products.filter(p => 
+      (platform==='all' || p.platform===platform) &&
+      (p.title && p.title.toLowerCase().includes(q))
+    );
+
+    if (sort==='priceAsc') filtered.sort((a,b)=>(a.price||0)-(b.price||0));
+    if (sort==='priceDesc') filtered.sort((a,b)=>(b.price||0)-(a.price||0));
+    if (sort==='latest') filtered.sort((a,b)=> new Date(b.lastSeen) - new Date(a.lastSeen));
+
+    renderProducts(filtered);
+  }
+
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+  document.getElementById('platformFilter').addEventListener('change', applyFilters);
+  document.getElementById('sortSelect').addEventListener('change', applyFilters);
+
+  applyFilters();
+}
+
+init();
+</script>
+</body>
+</html>
