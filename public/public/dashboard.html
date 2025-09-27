@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>لوحة التحكم - Commission Pro</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/dark-mode.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Tahoma, sans-serif; margin:0; padding:0; background:#f9f9f9; }
+    header { background:#111; color:#fff; padding:15px; text-align:center; }
+    .container { padding:20px; }
+    .cards { display:flex; flex-wrap:wrap; gap:20px; margin-bottom:30px; }
+    .card { background:#fff; flex:1; min-width:200px; border-radius:8px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,.1); text-align:center; }
+    .card h3 { margin:0; font-size:18px; color:#555; }
+    .card .value { font-size:22px; font-weight:bold; margin-top:10px; }
+    form { background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1); margin-bottom:30px; }
+    form input, form select { width:100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:5px; }
+    form button { background:#4CAF50; color:#fff; border:none; padding:10px; cursor:pointer; border-radius:5px; }
+    form button:hover { background:#45a049; }
+    canvas { background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.05); margin-bottom:30px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📊 لوحة التحكم</h1>
+  </header>
+  <div class="container">
+
+    <!-- Cards -->
+    <div class="cards">
+      <div class="card">
+        <h3>إجمالي النقرات</h3>
+        <div class="value" id="statClicks">0</div>
+      </div>
+      <div class="card">
+        <h3>إجمالي المبيعات</h3>
+        <div class="value" id="statSales">0</div>
+      </div>
+      <div class="card">
+        <h3>إجمالي الأرباح</h3>
+        <div class="value" id="statRevenue">$0</div>
+      </div>
+    </div>
+
+    <!-- Withdraw Form -->
+    <form id="withdrawForm">
+      <h3>💵 طلب سحب</h3>
+      <select id="method">
+        <option value="paypal">PayPal</option>
+        <option value="binance">Binance</option>
+        <option value="bank">تحويل بنكي</option>
+      </select>
+      <input id="details" placeholder="تفاصيل الحساب / البريد / المحفظة">
+      <input id="amount" type="number" placeholder="المبلغ">
+      <button type="submit">طلب سحب</button>
+      <div id="withdrawMsg" style="margin-top:10px; color:green;"></div>
+    </form>
+
+    <!-- Charts -->
+    <canvas id="platformChart" height="100"></canvas>
+    <canvas id="productChart" height="100"></canvas>
+  </div>
+
+<script>
+async function loadAnalytics() {
+  const res = await fetch('/api/owner/analytics', { credentials:'include' });
+  if (!res.ok) return;
+  const data = await res.json();
+
+  document.getElementById('statClicks').textContent = data.totalClicks;
+  document.getElementById('statSales').textContent = data.totalSales;
+  document.getElementById('statRevenue').textContent = "$" + (data.totalRevenue || 0).toFixed(2);
+
+  // منصات
+  const platforms = data.topPlatforms.map(p => p.platform);
+  const platformRev = data.topPlatforms.map(p => p.rev);
+
+  new Chart(document.getElementById('platformChart'), {
+    type:'bar',
+    data:{ labels:platforms, datasets:[{ label:'أرباح المنصات ($)', data:platformRev, backgroundColor:'#2196F3' }] },
+    options:{ responsive:true, plugins:{ legend:{ display:false } } }
+  });
+
+  // منتجات
+  const products = data.topProducts.map(p => p.productId);
+  const productRev = data.topProducts.map(p => p.rev);
+
+  new Chart(document.getElementById('productChart'), {
+    type:'pie',
+    data:{ labels:products, datasets:[{ label:'أرباح المنتجات', data:productRev, backgroundColor:['#FF6384','#36A2EB','#FFCE56','#66BB6A','#FFA726'] }] },
+    options:{ responsive:true }
+  });
+}
+
+// Submit withdraw
+document.getElementById('withdrawForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const method = document.getElementById('method').value;
+  const details = document.getElementById('details').value;
+  const amount = Number(document.getElementById('amount').value);
+  const r = await fetch('/api/withdraw', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    credentials:'include',
+    body: JSON.stringify({ amount, method, details })
+  });
+  const j = await r.json();
+  if (r.ok) {
+    document.getElementById('withdrawMsg').textContent = '✅ تم إنشاء طلب السحب';
+  } else {
+    document.getElementById('withdrawMsg').textContent = '❌ خطأ: ' + (j.error || 'غير معروف');
+    document.getElementById('withdrawMsg').style.color = 'red';
+  }
+});
+
+// تحديث كل دقيقة
+loadAnalytics();
+setInterval(loadAnalytics, 60000);
+</script>
+</body>
+</html>
