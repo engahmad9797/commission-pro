@@ -1,0 +1,2 @@
+// بدل fetchOwnerData(); بخطوة:
+setInterval(fetchOwnerData, 60000);
