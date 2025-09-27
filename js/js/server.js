@@ -166,4 +166,54 @@ db.run(`CREATE TABLE IF NOT EXISTS users (
   password TEXT,
   role TEXT DEFAULT 'owner'
 )`);
+const bcrypt = require('bcrypt');
+const session = require('express-session');
+
+// جلسة
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'superSecret',
+  resave: false,
+  saveUninitialized: false
+}));
+
+// تسجيل مستخدم جديد (مرة واحدة لإضافة المالك)
+app.post('/api/register', async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) return res.status(400).json({ error: 'missing_fields' });
+
+  const hashed = await bcrypt.hash(password, 10);
+  db.run(`INSERT INTO users (username, password, role) VALUES (?,?,?)`,
+    [username, hashed, 'owner'],
+    function(err) {
+      if (err) return res.status(500).json({ error: 'db_error' });
+      res.json({ success: true, id: this.lastID });
+    });
+});
+
+// تسجيل الدخول
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  db.get(`SELECT * FROM users WHERE username=?`, [username], async (err, user) => {
+    if (err || !user) return res.status(401).json({ error: 'invalid_credentials' });
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(401).json({ error: 'invalid_credentials' });
+
+    req.session.user = { id: user.id, username: user.username, role: user.role };
+    res.json({ success: true });
+  });
+});
+
+// تسجيل الخروج
+app.post('/api/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.json({ success: true });
+  });
+});
+
+// حماية المسارات الخاصة
+function requireLogin(req, res, next) {
+  if (!req.session.user) return res.status(401).json({ error: 'unauthorized' });
+  next();
+}
 
