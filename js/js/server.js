@@ -237,4 +237,16 @@ db.run(`CREATE TABLE IF NOT EXISTS campaigns (
   createdAt TEXT,
   FOREIGN KEY(userId) REFERENCES users(id)
 )`);
+app.post('/api/register', async (req, res) => {
+  const { username, password, role } = req.body;
+  if (!username || !password) return res.status(400).json({ error: 'missing_fields' });
+
+  const hashed = await bcrypt.hash(password, 10);
+  db.run(`INSERT INTO users (username, password, role) VALUES (?,?,?)`,
+    [username, hashed, role || 'user'],
+    function(err) {
+      if (err) return res.status(500).json({ error: 'username_taken' });
+      res.json({ success: true, id: this.lastID });
+    });
+});
 
