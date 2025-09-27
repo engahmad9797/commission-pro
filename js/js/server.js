@@ -160,4 +160,10 @@ app.post('/api/track-click', (req, res) => {
   log(`Click tracked: ${clickId} on ${platform}`, 'info');
   res.json({ clickId });
 });
+db.run(`CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT UNIQUE,
+  password TEXT,
+  role TEXT DEFAULT 'owner'
+)`);
 
