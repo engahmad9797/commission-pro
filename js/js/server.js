@@ -216,4 +216,25 @@ function requireLogin(req, res, next) {
   if (!req.session.user) return res.status(401).json({ error: 'unauthorized' });
   next();
 }
+db.run(`CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT UNIQUE,
+  password TEXT,
+  role TEXT DEFAULT 'user' -- user أو owner
+)`);
+
+db.run(`CREATE TABLE IF NOT EXISTS campaigns (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  userId INTEGER,
+  name TEXT,
+  platform TEXT,
+  productId TEXT,
+  budget REAL,
+  clicks INTEGER DEFAULT 0,
+  sales INTEGER DEFAULT 0,
+  revenue REAL DEFAULT 0,
+  status TEXT DEFAULT 'نشطة',
+  createdAt TEXT,
+  FOREIGN KEY(userId) REFERENCES users(id)
+)`);
 
