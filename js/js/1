@@ -1,0 +1,9 @@
+app.get('/api/owner/summary', requireAuth, requireAdmin, (req, res) => {
+  // مثال: اجمع معاملات كمؤكدة
+  db.all(`SELECT * FROM transactions ORDER BY createdAt DESC LIMIT 100`, [], (err, rows) => {
+    if (err) return res.status(500).json({ error: 'db' });
+    const total = rows.reduce((s,r) => s + (r.amount || 0), 0);
+    const pending = rows.filter(r => r.status !== 'confirmed').reduce((s,r) => s + (r.amount||0), 0);
+    return res.json({ total, pending, transactions: rows });
+  });
+});
