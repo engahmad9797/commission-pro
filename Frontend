@@ -1,0 +1,1 @@
+<button class="buy-btn" onclick="buyProduct('${p.id}','${p.platform}')">اشتري الآن</button>
