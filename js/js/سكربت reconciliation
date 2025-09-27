@@ -1,0 +1,49 @@
+// reconcile.js
+// يحتاج: csv-parse, sqlite3 أو firebase-admin لو تستخدم Firestore
+const fs = require('fs');
+const sqlite3 = require('sqlite3').verbose();
+const parse = require('csv-parse/lib/sync');
+
+const DB_PATH = './data.db';
+const CSV_PATH = process.argv[2] || './reports/amazon_report.csv';
+
+(async () => {
+  const db = new sqlite3.Database(DB_PATH);
+  try {
+    const csv = fs.readFileSync(CSV_PATH, 'utf8');
+    const rows = parse(csv, { columns: true, skip_empty_lines: true });
+
+    for (const r of rows) {
+      // البحث عن tracking param في URL أو notes
+      const url = r['Tracking URL'] || r['Click detail URL'] || r['Order detail URL'] || '';
+      const clickMatch = url.match(/tid=([^&]+)/) || url.match(/click_id=([^&]+)/);
+      const clickId = clickMatch ? clickMatch[1] : null;
+      const commission = parseFloat(r['Commission'] || r['Amount'] || 0);
+      const orderId = r['Order ID'] || r['Order Number'] || r['Transaction ID'];
+
+      if (!clickId) {
+        // محاولة مطابقة عبر email أو other fields
+        continue;
+      }
+
+      // هل تم تسجيلها من قبل؟
+      db.get(`SELECT * FROM transactions WHERE orderId = ?`, [orderId], (err, row) => {
+        if (err) { console.error(err); return; }
+        if (row) {
+          // موجود، تجاهل
+        } else {
+          const txnId = `txn_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
+          db.run(`INSERT INTO transactions (id, userId, platform, amount, orderId, clickId, status, createdAt) VALUES (?,?,?,?,?,?,?,?)`,
+            [txnId, null, 'amazon', commission, orderId, clickId, 'confirmed', new Date().toISOString()]);
+          db.run(`UPDATE clicks SET status=?, orderId=?, convertedAt=? WHERE id=?`, ['converted', orderId, new Date().toISOString(), clickId]);
+          console.log('Matched click', clickId, 'order', orderId, 'amount', commission);
+        }
+      });
+    }
+    console.log('Reconciliation finished');
+    db.close();
+  } catch (e) {
+    console.error('reconcile err', e);
+    db.close();
+  }
+})();
