@@ -1,0 +1,1 @@
+npm install express sqlite3 bcrypt express-session helmet rate-limit express-rate-limit dotenv nodemailer cors crypto node-cron sharp helmet csurf
