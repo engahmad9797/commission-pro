@@ -272,5 +272,17 @@ function requireOwner(req, res, next) {
   }
   next();
 }
+// المالك فقط
+app.get('/dashboard.html', requireOwner, (req, res) => {
+  res.sendFile(__dirname + '/public/dashboard.html');
+});
+app.get('/analytics.html', requireOwner, (req, res) => {
+  res.sendFile(__dirname + '/public/analytics.html');
+});
+
+// المالك أو المستخدم
+app.get('/campaigns.html', requireLogin, (req, res) => {
+  res.sendFile(__dirname + '/public/campaigns.html');
+});
 
 
