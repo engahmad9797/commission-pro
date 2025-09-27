@@ -1561,3 +1561,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         showNotification('خطأ', 'فشل تهيئة النظام', 'error');
     }
 });
+const { calculateCommission } = require('./tools');
+
+function handleSale(product) {
+  const commission = calculateCommission(product.price, product.platform);
+  console.log(`Commission earned: $${commission}`);
+}
