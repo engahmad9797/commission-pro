@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>إنشاء حساب - Commission Pro</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    body { display:flex; justify-content:center; align-items:center; height:100vh; background:#f5f5f5; font-family:Tahoma; }
+    .box { background:#fff; padding:30px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,.1); width:300px; }
+    .box h2 { text-align:center; margin-bottom:20px; }
+    input, button { width:100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:5px; }
+    button { background:#2196F3; color:#fff; cursor:pointer; }
+    button:hover { background:#1976D2; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>✍️ إنشاء حساب</h2>
+    <input id="username" placeholder="اسم المستخدم">
+    <input id="password" type="password" placeholder="كلمة المرور">
+    <button onclick="register()">تسجيل</button>
+    <div id="msg"></div>
+  </div>
+
+<script>
+async function register() {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+
+  const res = await fetch('/api/register', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ username, password })
+  });
+  const data = await res.json();
+
+  if (res.ok) {
+    document.getElementById('msg').textContent = "✅ تم إنشاء الحساب، الآن قم بتسجيل الدخول";
+    document.getElementById('msg').style.color = "green";
+  } else {
+    document.getElementById('msg').textContent = "❌ " + data.error;
+    document.getElementById('msg').style.color = "red";
+  }
+}
+</script>
+</body>
+</html>
