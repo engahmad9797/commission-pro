@@ -135,4 +135,21 @@ app.use(express.static('public'));
     });
   });
 });
+app.get('/api/owner/analytics', (req, res) => {
+  db.get(`SELECT COUNT(*) as totalClicks FROM clicks`, [], (err, row1) => {
+    db.get(`SELECT COUNT(*) as totalSales, SUM(amount) as totalRevenue FROM commissions`, [], (err2, row2) => {
+      db.all(`SELECT platform, SUM(amount) as rev FROM commissions GROUP BY platform ORDER BY rev DESC LIMIT 5`, [], (err3, topPlatforms) => {
+        db.all(`SELECT productId, SUM(amount) as rev FROM commissions GROUP BY productId ORDER BY rev DESC LIMIT 5`, [], (err4, topProducts) => {
+          res.json({
+            totalClicks: row1?.totalClicks || 0,
+            totalSales: row2?.totalSales || 0,
+            totalRevenue: row2?.totalRevenue || 0,
+            topPlatforms: topPlatforms || [],
+            topProducts: topProducts || []
+          });
+        });
+      });
+    });
+  });
+});
 
