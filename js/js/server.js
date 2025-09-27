@@ -152,4 +152,12 @@ app.get('/api/owner/analytics', (req, res) => {
     });
   });
 });
+const { generateId, log } = require('./tools');
+
+app.post('/api/track-click', (req, res) => {
+  const { productId, platform } = req.body;
+  const clickId = generateId('clk_');
+  log(`Click tracked: ${clickId} on ${platform}`, 'info');
+  res.json({ clickId });
+});
 
