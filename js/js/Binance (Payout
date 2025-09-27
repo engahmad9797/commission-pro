@@ -1,0 +1,42 @@
+// binance-payout.js (مثال باستخدام axios لأن node-binance-api قد لا يدعم withdraw via api keys بنفس الطريقة)
+const axios = require('axios');
+const APIKEY = process.env.BINANCE_APIKEY;
+const APISECRET = process.env.BINANCE_APISECRET;
+const BASE = 'https://api.binance.com';
+
+const qs = require('querystring');
+const crypto = require('crypto');
+
+function sign(params) {
+  return crypto.createHmac('sha256', APISECRET).update(qs.stringify(params)).digest('hex');
+}
+
+async function withdraw(asset, address, amount, network) {
+  const timestamp = Date.now();
+  const params = {
+    coin: asset,
+    address,
+    amount,
+    network,
+    timestamp
+  };
+  params.signature = sign(params);
+
+  try {
+    const resp = await axios.post(`${BASE}/sapi/v1/capital/withdraw/apply`, qs.stringify(params), {
+      headers: { 'X-MBX-APIKEY': APIKEY, 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
+    return resp.data;
+  } catch (e) {
+    console.error('binance withdraw error', e.response && e.response.data ? e.response.data : e.message);
+    throw e;
+  }
+}
+
+// Usage:
+(async () => {
+  try {
+    const r = await withdraw('USDT', '0xYourRecipientAddress', '10', 'BEP20');
+    console.log('withdraw result', r);
+  } catch (e) { console.error(e); }
+})();
