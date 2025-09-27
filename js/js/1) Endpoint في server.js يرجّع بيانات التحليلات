@@ -1,0 +1,29 @@
+// === Analytics API ===
+app.get('/api/owner/analytics', requireAuth, requireAdmin, (req, res) => {
+  const stats = {};
+
+  db.serialize(() => {
+    // إجمالي النقرات
+    db.get(`SELECT COUNT(*) as clicks FROM clicks`, [], (err, row) => {
+      stats.totalClicks = row ? row.clicks : 0;
+
+      // إجمالي المبيعات
+      db.get(`SELECT COUNT(*) as sales, SUM(amount) as revenue FROM transactions WHERE status='confirmed'`, [], (err2, row2) => {
+        stats.totalSales = row2 ? row2.sales : 0;
+        stats.totalRevenue = row2 ? (row2.revenue || 0) : 0;
+
+        // أفضل منصة
+        db.all(`SELECT platform, COUNT(*) as cnt, SUM(amount) as rev FROM transactions GROUP BY platform ORDER BY rev DESC LIMIT 5`, [], (err3, rows3) => {
+          stats.topPlatforms = rows3 || [];
+
+          // أفضل المنتجات
+          db.all(`SELECT productId, COUNT(*) as cnt, SUM(amount) as rev FROM transactions GROUP BY productId ORDER BY rev DESC LIMIT 5`, [], (err4, rows4) => {
+            stats.topProducts = rows4 || [];
+
+            res.json(stats);
+          });
+        });
+      });
+    });
+  });
+});
