@@ -1,0 +1,18 @@
+async function init() {
+  let products = await fetchProducts();
+  let filtered = products;
+
+  function applyFilters() { ... } // نفس الكود القديم
+
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+  document.getElementById('platformFilter').addEventListener('change', applyFilters);
+  document.getElementById('sortSelect').addEventListener('change', applyFilters);
+
+  applyFilters();
+
+  // تحديث كل 60 ثانية
+  setInterval(async () => {
+    products = await fetchProducts();
+    applyFilters();
+  }, 60000);
+}
