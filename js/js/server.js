@@ -249,4 +249,16 @@ app.post('/api/register', async (req, res) => {
       res.json({ success: true, id: this.lastID });
     });
 });
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  db.get(`SELECT * FROM users WHERE username=?`, [username], async (err, user) => {
+    if (err || !user) return res.status(401).json({ error: 'invalid_credentials' });
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(401).json({ error: 'invalid_credentials' });
+
+    req.session.user = { id: user.id, username: user.username, role: user.role };
+    res.json({ success: true, role: user.role });
+  });
+});
 
