@@ -118,3 +118,4 @@ app.get('/api/products', (req, res) => {
     });
   });
 });
+app.use(express.static('public'));
