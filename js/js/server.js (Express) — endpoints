@@ -1,0 +1,204 @@
+// === server.js additions ===
+// يحتاج: express, requireAuth middleware (موجود عندك)، dbManager (من database.js)، apiManager (من api.js)
+const crypto = require('crypto');
+
+// Helper to generate unique ids
+function genId(prefix='id') {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2,9)}`;
+}
+
+/**
+ * 1) Track click
+ * يحفظ نقرة ويعيد clickId.
+ */
+app.post('/api/track-click', async (req, res) => {
+  try {
+    const { productId, platform, meta = {} } = req.body;
+    const clickId = genId('click');
+
+    const clickRecord = {
+      id: clickId,
+      productId,
+      platform,
+      userId: req.session && req.session.userId ? req.session.userId : null,
+      ip: req.ip,
+      ua: req.headers['user-agent'],
+      meta,
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    };
+
+    // مثال إذا تستخدم SQLite (server.js عندك يستخدم sqlite)
+    db.run(
+      `INSERT INTO clicks (id, productId, platform, userId, ip, ua, meta, status, createdAt) VALUES (?,?,?,?,?,?,?,?,?)`,
+      [clickRecord.id, clickRecord.productId, clickRecord.platform, clickRecord.userId, clickRecord.ip, clickRecord.ua, JSON.stringify(clickRecord.meta), clickRecord.status, clickRecord.createdAt],
+      function(err) {
+        if (err) {
+          console.error('click insert err', err);
+          return res.status(500).json({ error: 'db_error' });
+        }
+        return res.json({ clickId });
+      }
+    );
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'server_error' });
+  }
+});
+
+/**
+ * 2) Generate affiliate link
+ * يتصل بـ apiManager.generateAffiliateLink (أنت عندك تكوين في tools.js وapi.js)
+ * يُعيد رابط affiliateUrl و linkId.
+ */
+app.post('/api/generate-affiliate-link', requireAuth, async (req, res) => {
+  try {
+    const { productId, platform, clickId } = req.body;
+    // تأكد أنك تملك apiManager أو toolsManager في الـserver context
+    const userId = req.session.userId;
+
+    // مثال: استدعاء API manager (عدِّل حسب اسمك)
+    const result = await apiManager.generateAffiliateLink(productId, platform, { userId, clickId });
+    // result => { url, linkId, expiresAt, raw }
+
+    // خزّن الربط في جدول/collection links للـ reconciliation إن لزم
+    const linkId = result.linkId || genId('link');
+    db.run(`INSERT INTO affiliate_links (id, productId, platform, userId, clickId, url, createdAt) VALUES (?,?,?,?,?,?,?)`,
+      [linkId, productId, platform, userId, clickId || null, result.url, new Date().toISOString()],
+      (err) => {
+        if (err) console.warn('link save failed', err);
+        // لا نعيد خطأ لأن الرابط جاهز
+        return res.json({ affiliateUrl: result.url, linkId });
+      }
+    );
+  } catch (err) {
+    console.error('generate-affiliate-link error', err);
+    res.status(500).json({ error: 'failed' });
+  }
+});
+
+/**
+ * 3) Webhook endpoint عام لكل شبكات affiliate
+ * تأكد من إضافة تحقق التوقيع (HMAC) لكل منصة حسب الـdocs
+ */
+app.post('/webhooks/affiliate/:platform', async (req, res) => {
+  const platform = req.params.platform;
+  const payload = req.body;
+
+  try {
+    // 1) تحقق التوقيع هنا إن كانت المنصة تقدم header مع signature
+    // مثال افتراضي:
+    // const signature = req.headers['x-platform-signature'];
+    // validateSignature(signature, payload, PLATFORM_SECRETS[platform]);
+
+    // 2) استخرج click/track id - كل منصة مختلفة
+    const clickId = payload.tid || payload.tracking_id || payload.click_id || (payload.url && extractTidFromUrl(payload.url));
+    const amount = Number(payload.commission || payload.amount || 0);
+    const orderId = payload.order_id || payload.transaction_id || payload.txn;
+    const status = payload.status || 'confirmed';
+
+    if (!clickId) {
+      // حاول مطابقة عبر affiliate link ID أو عبر email/order metadata
+      console.warn('webhook missing clickId for platform', platform, payload);
+      // لا تزود خطأ فوراً — سجّل وارجع 200 لتجنب retries متواصلة
+      return res.status(200).send('ok');
+    }
+
+    // 3) سجّل المعاملة وأضف رصيد عبر dbManager أو جدول transactions
+    // استخدم dbManager.addEarning أو نفذ insert يدوي
+    // مثال SQLite insert:
+    const txnId = genId('txn');
+    const createdAt = new Date().toISOString();
+    db.run(`INSERT INTO transactions (id, userId, platform, amount, orderId, clickId, status, createdAt) VALUES (?,?,?,?,?,?,?,?)`,
+      [txnId, null, platform, amount, orderId, clickId, status, createdAt],
+      (err) => {
+        if (err) {
+          console.error('txn insert err', err);
+          return res.status(500).send('err');
+        }
+
+        // حدث حالة النقرة المرتبطة إلى converted
+        db.run(`UPDATE clicks SET status=?, orderId=?, convertedAt=? WHERE id=?`, ['converted', orderId, createdAt, clickId], () => {
+          // ابدأ منطق إضافة الأرباح للمالك / المستخدم المرتبط
+          // مثال: إيجاد affiliate_links أو click record لمعرفة userId
+          db.get(`SELECT userId FROM clicks WHERE id = ?`, [clickId], (err2, row) => {
+            const userId = row && row.userId ? row.userId : null;
+            // إذا تستخدم dbManager.addEarning (Firestore) استدعيه هنا؛ سنخزن في transactions بسيط
+            if (userId) {
+              // مثال بسيط: زيادة رصيد في جدول users
+              db.run(`UPDATE users SET totalEarnings = COALESCE(totalEarnings,0) + ? WHERE id = ?`, [amount, userId], (e) => {
+                if (e) console.warn('update earnings failed', e);
+                // انتهينا
+                return res.status(200).send('ok');
+              });
+            } else {
+              // لو ما في userId — سجّل للـmanual reconciliation
+              return res.status(200).send('ok');
+            }
+          });
+        });
+      }
+    );
+
+  } catch (e) {
+    console.error('webhook handling error', e);
+    return res.status(500).send('error');
+  }
+});
+
+/**
+ * 4) طلب سحب (withdraw request)
+ */
+app.post('/api/withdraw', requireAuth, async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const { amount, method, details } = req.body;
+    if (!amount || amount <= 0) return res.status(400).json({ error: 'invalid_amount' });
+
+    // تأكد من أن المستخدم يملك رصيد كافٍ
+    db.get(`SELECT totalEarnings FROM users WHERE id = ?`, [userId], (err, row) => {
+      if (err) return res.status(500).json({ error: 'db' });
+      const balance = row ? (row.totalEarnings || 0) : 0;
+      if (balance < amount) return res.status(400).json({ error: 'insufficient' });
+
+      const withdrawId = genId('wd');
+      const createdAt = new Date().toISOString();
+      db.run(`INSERT INTO withdrawals (id, userId, amount, method, details, status, createdAt) VALUES (?,?,?,?,?,?,?)`,
+        [withdrawId, userId, amount, method, JSON.stringify(details || {}), 'pending', createdAt],
+        (err2) => {
+          if (err2) return res.status(500).json({ error: 'db_insert' });
+          // قم بطرح المبلغ من الرصيد فوراً أو بعد الموافقة حسب سياسة الشركة. هنا نطرح لحظياً:
+          db.run(`UPDATE users SET totalEarnings = totalEarnings - ? WHERE id = ?`, [amount, userId]);
+          return res.json({ ok: true, id: withdrawId });
+        });
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'server' });
+  }
+});
+
+/**
+ * 5) Admin approve withdrawal (manual payout)
+ */
+function requireAdmin(req, res, next) {
+  // نفترض userId=1 هو admin أو تحقق من role field في users table
+  if (req.session && req.session.username === 'admin') return next();
+  return res.status(403).json({ error: 'forbidden' });
+}
+
+app.post('/admin/approve-withdrawal/:id', requireAdmin, async (req, res) => {
+  const id = req.params.id;
+  // جلب السطر
+  db.get(`SELECT * FROM withdrawals WHERE id = ?`, [id], (err, row) => {
+    if (err || !row) return res.status(404).json({ error: 'notfound' });
+    if (row.status !== 'pending') return res.status(400).json({ error: 'invalid_state' });
+
+    // تنفيذ دفعة هنا: إما manual أو عبر Binance API / Stripe Payout / PayPal Payouts
+    // بعد التنفيذ بنجاح:
+    db.run(`UPDATE withdrawals SET status=?, approvedAt=? WHERE id=?`, ['completed', new Date().toISOString(), id], (e) => {
+      if (e) return res.status(500).json({ error: 'db' });
+      return res.json({ ok: true });
+    });
+  });
+});
